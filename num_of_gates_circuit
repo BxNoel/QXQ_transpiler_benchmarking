@@ -1,0 +1,28 @@
+from qiskit.compiler import transpile
+from qiskit.visualization import plot_gate_map
+import matplotlib.pyplot as plt
+
+# Create a list of quantum circuits
+circuits = [
+    QuantumCircuit(2),
+    QuantumCircuit(3),
+    QuantumCircuit(4)
+]
+
+# Select your backend (e.g., Aer's qasm_simulator)
+backend = Aer.get_backend('qasm_simulator')
+
+# Transpile each circuit, count the gates, and store the results
+gate_counts = []
+for circuit in circuits:
+    transpiled_circuit = transpile(circuit, backend)
+    gate_count = transpiled_circuit.count_ops()
+    gate_counts.append(sum(gate_count.values()))
+
+# Generate a graph to visualize the gate counts
+plt.plot(range(1, len(circuits) + 1), gate_counts, marker='o')
+plt.xlabel('Circuit')
+plt.ylabel('Gate Count')
+plt.title('Gate Count of Transpiled Circuits')
+plt.xticks(range(1, len(circuits) + 1))
+plt.show()
