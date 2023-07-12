@@ -1,0 +1,36 @@
+from qiskit import QuantumCircuit, Aer, execute
+from qiskit.compiler import transpile
+from qiskit.quantum_info import state_fidelity
+import matplotlib.pyplot as plt
+
+# Create a reference quantum circuit
+reference_circuit = QuantumCircuit(2)
+reference_circuit.h(0)
+reference_circuit.cx(0, 1)
+
+# Create a list of quantum circuits
+circuits = [
+    QuantumCircuit(2),
+    QuantumCircuit(3),
+    QuantumCircuit(4)
+]
+
+# Select your backend (e.g., Aer's qasm_simulator)
+backend = Aer.get_backend('qasm_simulator')
+
+# Transpile each circuit, execute, and measure the fidelity
+fidelities = []
+for circuit in circuits:
+    transpiled_circuit = transpile(circuit, backend)
+    reference_state = execute(reference_circuit, backend).result().get_statevector()
+    circuit_state = execute(transpiled_circuit, backend).result().get_statevector()
+    fidelity = state_fidelity(reference_state, circuit_state)
+    fidelities.append(fidelity)
+
+# Generate a graph to visualize the circuit fidelities
+plt.plot(range(1, len(circuits) + 1), fidelities, marker='o')
+plt.xlabel('Circuit')
+plt.ylabel('Circuit Fidelity')
+plt.title('Circuit Fidelity after Transpilation')
+plt.xticks(range(1, len(circuits) + 1))
+plt.show()
