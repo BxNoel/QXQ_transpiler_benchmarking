@@ -2,21 +2,22 @@ from qiskit import QuantumCircuit, Aer, execute
 from qiskit.compiler import transpile
 from qiskit.quantum_info import state_fidelity
 import matplotlib.pyplot as plt
+import os
 
-# Create a reference quantum circuit
-reference_circuit = QuantumCircuit(2)
-reference_circuit.h(0)
-reference_circuit.cx(0, 1)
-
-# Create a list of quantum circuits
-circuits = [
-    QuantumCircuit(2),
-    QuantumCircuit(3),
-    QuantumCircuit(4)
-]
+# Specify the path to the folder containing QASM circuits
+folder_path = '/Users/catherinelozano/Downloads/MQTBench_2023-07-13-01-22-35'
 
 # Select your backend (e.g., Aer's qasm_simulator)
 backend = Aer.get_backend('qasm_simulator')
+
+# Read the QASM circuits from the folder
+circuits = []
+for file_name in os.listdir(folder_path):
+    file_path = os.path.join(folder_path, file_name)
+    with open(file_path, 'r') as file:
+        qasm_str = file.read()
+        circuit = QuantumCircuit.from_qasm_str(qasm_str)
+        circuits.append(circuit)
 
 # Transpile each circuit, execute, and measure the fidelity
 fidelities = []
