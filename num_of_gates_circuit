@@ -2,6 +2,7 @@ from qiskit.compiler import transpile
 from qiskit.visualization import plot_gate_map
 import matplotlib.pyplot as plt
 from qiskit import QuantumCircuit
+from qiskit import Aer, execute 
 
 # Create a list of quantum circuits
 circuits = [
