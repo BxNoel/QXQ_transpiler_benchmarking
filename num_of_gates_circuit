@@ -5,33 +5,38 @@ from qiskit import QuantumCircuit
 from qiskit import Aer, execute
 from qiskit.circuit.random import random_circuit
 import random
+import os
 
-# Create a list of quantum circuits of random size and depth 
-circuits = [
-    random_circuit(random.randint(0, 5), random.randint(0, 5)),
-    random_circuit(random.randint(0, 5), random.randint(0, 5)),
-    random_circuit(random.randint(0, 5), random.randint(0, 5))
-    # QuantumCircuit(),
-    # QuantumCircuit(3),
-    # QuantumCircuit(4)
-]
+# Path to the circuit tests
+#circuit_tests_path = 'circuit_tests'
 
-#circuits.draw()
+# Create a list of quantum circuits 
+random_circuits = []
+
+# Responsible for creating circuits of random size and depth
+for i in range(5):
+    num_qubits = random.randint(1,10)
+    depth = random.randint(1,10)
+    qc = random_circuit(num_qubits, depth, measure=True)
+    random_circuits.append(qc)
+
+random_circuits
 
 # Select your backend (e.g., Aer's qasm_simulator)
 backend = Aer.get_backend('qasm_simulator')
 
 # Transpile each circuit, count the gates, and store the results
 gate_counts = []
-for circuit in circuits:
+for circuit in random_circuits: #os.listdir(circuit_tests_path) if we used a file with random circuits ready to be tested
+    #circuit = os.path.join(circuit, circuit_tests_path)
     transpiled_circuit = transpile(circuit, backend)
     gate_count = transpiled_circuit.count_ops()
     gate_counts.append(sum(gate_count.values()))
 
 # Generate a graph to visualize the gate counts
-plt.plot(range(1, len(circuits) + 1), gate_counts, marker='o')
+plt.plot(range(1, len(random_circuits) + 1), gate_counts, marker='o')
 plt.xlabel('Circuit')
 plt.ylabel('Gate Count')
 plt.title('Gate Count of Transpiled Circuits')
-plt.xticks(range(1, len(circuits) + 1))
+plt.xticks(range(1, len(random_circuits) + 1))
 plt.show()
