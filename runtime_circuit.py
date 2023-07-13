@@ -10,7 +10,8 @@ from qiskit_ibm_provider import IBMProvider
 
 # Specify the folder path containing the QASM circuits
 #folder_path = '/Users/catherinelozano/Desktop/circuit_tests'
-folder_path = '/Users/catherinelozano/Downloads/MQTBench_Big'
+#Updated to reflect Noel's file of circuits to work
+folder_path = '/Users/catherinelozano/Downloads/MQT_Circuits'
 # Select your backend (e.g., Aer's qasm_simulator)
 #backend = provider.get_backend(ibmq_cusco)
 backend = Aer.get_backend('qasm_simulator')
