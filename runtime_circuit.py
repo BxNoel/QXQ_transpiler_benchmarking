@@ -5,7 +5,8 @@ import matplotlib.pyplot as plt
 import os
 
 # Specify the folder path containing the QASM circuits
-folder_path = '/Users/catherinelozano/Desktop/circuit_tests'
+folder_path = 'circuit_tests'
+#folder_path = '/Users/catherinelozano/Desktop/circuit_tests'
 
 # Select your backend (e.g., Aer's qasm_simulator)
 backend = Aer.get_backend('qasm_simulator')
