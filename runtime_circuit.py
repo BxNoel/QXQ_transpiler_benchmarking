@@ -7,7 +7,7 @@ import os
 # Specify the folder path containing the QASM circuits
 folder_path = '/Users/catherinelozano/Desktop/circuit_tests'
 
-# Select your backend (e.g., Aer's qasm_simulator), **consdier if we should use another backend for testing** --> Noel
+# Select your backend (e.g., Aer's qasm_simulator)
 backend = Aer.get_backend('qasm_simulator')
 
 # Define the optimization levels to test
@@ -33,8 +33,9 @@ for file_name in os.listdir(folder_path):
         # Measure the original runtime (without transpiling)
         start_time = time.time()
         job = execute(circuit, backend)
+        result = job.result()
         end_time = time.time()
-        runtime_original = end_time - start_time
+        runtime_original = result.time_taken
         original_runtimes.append(runtime_original)
 
         # Iterate through the optimization levels
@@ -43,8 +44,9 @@ for file_name in os.listdir(folder_path):
             start_time = time.time()
             transpiled_circuit = transpile(circuit, backend, optimization_level=opt_level)
             job = execute(transpiled_circuit, backend)
+            result = job.result()
             end_time = time.time()
-            runtime_before = end_time - start_time
+            runtime_before = result.time_taken
             runtimes_before_transpile.append(runtime_before)
 
 # Generate the bar graph to visualize the runtimes
