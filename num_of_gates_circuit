@@ -2,14 +2,21 @@ from qiskit.compiler import transpile
 from qiskit.visualization import plot_gate_map
 import matplotlib.pyplot as plt
 from qiskit import QuantumCircuit
-from qiskit import Aer, execute 
+from qiskit import Aer, execute
+from qiskit.circuit.random import random_circuit
+import random
 
-# Create a list of quantum circuits
+# Create a list of quantum circuits of random size and depth 
 circuits = [
-    QuantumCircuit(2),
-    QuantumCircuit(3),
-    QuantumCircuit(4)
+    random_circuit(random.randint(0, 5), random.randint(0, 5)),
+    random_circuit(random.randint(0, 5), random.randint(0, 5)),
+    random_circuit(random.randint(0, 5), random.randint(0, 5))
+    # QuantumCircuit(),
+    # QuantumCircuit(3),
+    # QuantumCircuit(4)
 ]
+
+#circuits.draw()
 
 # Select your backend (e.g., Aer's qasm_simulator)
 backend = Aer.get_backend('qasm_simulator')
