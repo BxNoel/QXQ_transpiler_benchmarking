@@ -3,11 +3,16 @@ from qiskit.compiler import transpile
 import time
 import matplotlib.pyplot as plt
 import os
+from qiskit_ibm_provider import IBMProvider
+
+#ignore used for simulating for qc   
+#provider = IBMProvider()
 
 # Specify the folder path containing the QASM circuits
-folder_path = '/Users/catherinelozano/Desktop/circuit_tests'
-
+#folder_path = '/Users/catherinelozano/Desktop/circuit_tests'
+folder_path = '/Users/catherinelozano/Downloads/MQTBench_Big'
 # Select your backend (e.g., Aer's qasm_simulator)
+#backend = provider.get_backend(ibmq_cusco)
 backend = Aer.get_backend('qasm_simulator')
 
 # Define the optimization levels to test
@@ -51,21 +56,23 @@ for file_name in os.listdir(folder_path):
 
 # Generate the bar graph to visualize the runtimes
 x = range(len(circuit_labels))
-width = 0.2
+width = 0.1
 
 plt.figure(figsize=(12, 6))
 
 # Plot original runtime (without transpiling)
-plt.bar(x, original_runtimes, width, label='Original')
+plt.bar(x, original_runtimes, width, label='Original Runtime')
 
 # Plot runtimes before transpiling at each optimization level
 for i, opt_level in enumerate(optimization_levels):
     opt_runtimes = runtimes_before_transpile[i::len(optimization_levels)]
-    plt.bar([xi + width * (i + 1) for xi in x], opt_runtimes, width, label=f'Optimization Level {opt_level}')
+    plt.bar([xi + width * (i + 1) for xi in x], opt_runtimes, width, label=f'Opt. Level {opt_level}')
 
-plt.xlabel('Circuit')
-plt.ylabel('Runtime (seconds)')
+plt.xlabel('Circuit Name')
+plt.ylabel('Runtime in seconds')
 plt.title('Runtime of Circuits')
 plt.xticks([xi + width * (len(optimization_levels) / 2) for xi in x], circuit_labels, rotation=45, ha='right')
 plt.legend()
 plt.show()
+
+#Thinking of creating a scatter plot with each opt level, and writing that as we move right qubits increase
