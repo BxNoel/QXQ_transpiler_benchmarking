@@ -8,13 +8,21 @@ import random
 import os
 
 # Path to the circuit tests
-#circuit_tests_path = 'circuit_tests'
+def file_reader(file_path):
+    circuits = []
+    directory = file_path
+    for circuit in os.listdir(directory):
+        circuit_path = file_path + "/" + circuit
+        qc = QuantumCircuit.from_qasm_file(circuit_path)
+        circuits.append(qc)
+
+    return circuits
 
 # Create a list of quantum circuits 
 random_circuits = []
 
 # Responsible for creating circuits of random size and depth
-for i in range(5):
+for i in range(50):
     num_qubits = random.randint(1,10)
     depth = random.randint(1,10)
     qc = random_circuit(num_qubits, depth, measure=True)
