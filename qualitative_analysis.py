@@ -48,14 +48,14 @@ for circuit in circuits:
 
 
 
-# Find entangling gates in transpiled circuits
-entagling_gates = []
-def find_entangled_qubits(transpiled_circuits):
-    for gate in transpiled_circuits:
-        if gate in entangling_gates_type:
-            entagling_gates.append(transpiled_circuits[gate])
+# # Find entangling gates in transpiled circuits
+# entagling_gates = []
+# def find_entangled_qubits(transpiled_circuits):
+#     for gate in transpiled_circuits:
+#         if gate in entangling_gates_type:
+#             entagling_gates.append(transpiled_circuits[gate])
     
-    return entagling_gates
+#     return entagling_gates
 
 for circuit in transpiled_circuits[3]:
     entangling_gates = find_entangled_qubits(circuit.count_ops())
