@@ -23,19 +23,19 @@ def file_reader(file_path):
             circuits.append(qc)
     return circuits
 
-def benchmark_circuit_depth(circuits):
-    backend = FakeSherbrooke()
-    Map = {}
-    counter = 1
-    for i in range(len(circuits)):
-        depths = []
-        depths.append(transpile(circuits[i], optimization_level=1, backend = backend).depth())
-        depths.append(transpile(circuits[i], optimization_level=2, backend = backend).depth())
-        depths.append(transpile(circuits[i], optimization_level=3, backend = backend).depth())
-        Map[i] = depths
-        print(counter)
-        counter += 1
-    return Map
+# def benchmark_circuit_depth(circuits):
+#     backend = FakeSherbrooke()
+#     Map = {}
+#     counter = 1
+#     for i in range(len(circuits)):
+#         depths = []
+#         depths.append(transpile(circuits[i], optimization_level=1, backend = backend).depth())
+#         depths.append(transpile(circuits[i], optimization_level=2, backend = backend).depth())
+#         depths.append(transpile(circuits[i], optimization_level=3, backend = backend).depth())
+#         Map[i] = depths
+#         print(counter)
+#         counter += 1
+#     return Map
 
 def num_single_and_multi_qubit_gates(circuit):
     Map = {'single' : 0, "multi" : 0}
@@ -110,5 +110,5 @@ def single_multi_ratio_benchmarking(circuits):
     
     return return_list
 
-MQT_circuits = file_reader("/Users/noelnegron/Desktop/MQTBench_2023-07-13-16-50-22")
-data = single_multi_ratio_benchmarking(MQT_circuits)
+MQTCircuits = file_reader("/Users/noelnegron/Desktop/DJ_Algorithms")
+data = single_multi_ratio_benchmarking(MQTCircuits)
