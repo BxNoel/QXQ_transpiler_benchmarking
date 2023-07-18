@@ -69,7 +69,7 @@ def single_multi_ratio_benchmarking(circuits):
     
         
         #Step 2: Transpile the circuit with level 1, 2 and 3 and collect the data. The return type of this object is a Map with key value pairs 
-        # 'single' -- > Number of Single-Qubit Gates           'multi' --> Number of multi-qubit gates
+        # 'single' -- > Number of Single-Qubit Gates           'multi' --> Number of Multi-Qubit gates
         #Update Map Accordingly
         level1_data = num_single_and_multi_qubit_gates(qc1)
         level2_data = num_single_and_multi_qubit_gates(qc2)
@@ -109,7 +109,6 @@ def single_multi_ratio_benchmarking(circuits):
     plt.show()  
     
     return return_list
-
 
 MQT_circuits = file_reader("/Users/noelnegron/Desktop/MQTBench_2023-07-13-16-50-22")
 data = single_multi_ratio_benchmarking(MQT_circuits)
