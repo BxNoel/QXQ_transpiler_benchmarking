@@ -29,11 +29,23 @@ transpiled_circuits = {3: [],
                        2: [],
                        1: []} 
 
+
+
 # Here we are transpiling the circuits and storing them in the dictionary
 for circuit in circuits:
+
+    # stores the number of gates 
+    gate_counts = []
+
     for opt_level in [3, 2, 1]:
         transpiled_circuit = transpile(circuit, backend, optimization_level=opt_level)
         transpiled_circuits[opt_level].append(transpiled_circuit)
+
+        # Counts the number of gates in a given circuit
+        gate_count = transpiled_circuit.count_ops()
+        gate_counts.append(sum(gate_count.values()))
+
+
 
 
 # Find entangling gates in transpiled circuits
