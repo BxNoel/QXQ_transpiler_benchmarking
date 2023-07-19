@@ -29,7 +29,7 @@ def file_reader(file_path):
     return circuits
 
 # Read circuits from files
-circuits = file_reader("MQT_Circuits") # have to change folder directory for the circuits
+circuits = file_reader("MQT_Circuits")
 
 # Select the transpilation backend
 backend = FakeSherbrooke()

@@ -6,6 +6,7 @@ from qiskit.visualization import plot_gate_map
 from qiskit.visualization import plot_histogram, plot_bloch_multivector
 import matplotlib.pyplot as plt
 import os
+import re
 
 # Path to the circuits stored locally
 def file_reader(file_path):
@@ -13,7 +14,7 @@ def file_reader(file_path):
     directory = file_path
     for circuit in os.listdir(directory):
         circuit_path = file_path + "/" + circuit
-        if(circuit_path.endswith('.qasm')):
+        if (circuit_path.endswith('.qasm')):
             print(circuit_path)
             qc = QuantumCircuit.from_qasm_file(circuit_path)
             circuits.append(qc)
@@ -62,7 +63,7 @@ plt.show()
 
 
 """
-CIRCUIT DEPTH
+RATION: Single Qubit Gates : Multi Qubit Gates
 """
 
 def num_single_and_multi_qubit_gates(circuit):
