@@ -1,4 +1,4 @@
-oufrom mqt.bench import get_benchmark
+from mqt.bench import get_benchmark
 from qiskit import QuantumCircuit, Aer, execute, assemble
 from qiskit.providers.fake_provider import FakeSherbrooke
 from qiskit.compiler import transpile
@@ -13,21 +13,21 @@ def file_reader(file_path):
     directory = file_path
     for circuit in os.listdir(directory):
         circuit_path = file_path + "/" + circuit
-        qc = QuantumCircuit.from_qasm_file(circuit_path)
-        circuits.append(qc)
+        if(circuit_path.endswith('.qasm')):
+            print(circuit_path)
+            qc = QuantumCircuit.from_qasm_file(circuit_path)
+            circuits.append(qc)
 
     return circuits
 
 # Read circuits from files
-circuits = file_reader("MQT_Circuits") # have to change folder directory for the circuits
+circuits = file_reader("/Users/noelnegron/Desktop/DJ_Algorithms") # have to change folder directory for the circuits
 
 # Select the transpilation backend
 backend = FakeSherbrooke()
 
 # Dictionary to store transpiled circuits for each optimization level
-transpiled_circuits = {3: [],
-                       2: [],
-                       1: []} 
+transpiled_circuits = {3: [], 2: [],1: []} 
 
 """
 COUNT NUMBER OF GATES
@@ -41,6 +41,7 @@ for circuit in circuits:
 
     # stores the number of entangled gates 
     entangled_gate_counts = []
+    counter = 0
 
     for opt_level in [3, 2, 1]:
         transpiled_circuit = transpile(circuit, backend, optimization_level=opt_level)
@@ -49,6 +50,9 @@ for circuit in circuits:
         # counts the number of gates in a given circuit
         gate_count = transpiled_circuit.count_ops()
         gate_counts.append(sum(gate_count.values()))
+        
+        counter = counter + 1
+        print("Just finished Obtaining the Number of Gates for circuit: ",  counter)
 
 # Generate a graph to visualize the gate counts
 plt.plot(range(1, len(circuits) + 1), gate_counts, marker='o')
@@ -144,7 +148,7 @@ NUMBER OF ENTANGLED GATES
 """
 entangling_gates_type = ['ecr', 'cx', 'cz', 'swap', 'h', 'ccx', 'crx', 'cry', 'crz']
 
-# Find entangling gates in transpiled circuits
+# Find entangling gates in transpiled circuits: Make this into a method
 entagling_gates = []
 def find_entangled_qubits(transpiled_circuits):
     for gate in transpiled_circuits:
@@ -153,8 +157,10 @@ def find_entangled_qubits(transpiled_circuits):
     
     return entagling_gates
 
+counter = 0
 for circuit in transpiled_circuits[3]:
     entangling_gates = find_entangled_qubits(circuit.count_ops())
+    print("Just finished Counting the Number of Entangled Gates for circuit ",  counter)
 
 # Plot the number of entangled gates before and after transpile to compare
 plt.plot(range(1, len(transpiled_circuits[3]) + 1), entangling_gates, marker='o')
