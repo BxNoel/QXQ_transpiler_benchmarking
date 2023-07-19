@@ -13,8 +13,10 @@ def file_reader(file_path):
     directory = file_path
     for circuit in os.listdir(directory):
         circuit_path = file_path + "/" + circuit
-        qc = QuantumCircuit.from_qasm_file(circuit_path)
-        circuits.append(qc)
+        if(circuit_path.endswith('.qasm')):
+            print(circuit_path)
+            qc = QuantumCircuit.from_qasm_file(circuit_path)
+            circuits.append(qc)
 
     return circuits
 
