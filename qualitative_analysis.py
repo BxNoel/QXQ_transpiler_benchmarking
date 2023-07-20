@@ -38,6 +38,7 @@ backend = FakeSherbrooke()
 """
 COUNT NUMBER OF GATES
 """
+
 def gate_count(circuits):
     # Transpile each circuit, count the gates, and store the results
     gate_counts = []
@@ -60,7 +61,6 @@ def gate_count(circuits):
         opt2.append(sum(opt2_count.values()))
         opt3.append(sum(opt3_count.values()))
 
-
     # Generate a graph to visualize the gate counts for optimization level 1
     plt.plot(range(1, len(circuits) + 1), opt1, label = "Optimization Level 1")
     plt.plot(range(1, len(circuits) + 1), opt2, label = "Optimization Level 2")
@@ -75,7 +75,7 @@ def gate_count(circuits):
 gate_count(circuits)
 
 """
-RATION: Single Qubit Gates : Multi Qubit Gates
+RATIO: Single Qubit Gates : Multi Qubit Gates
 """
 
 def num_single_and_multi_qubit_gates(circuit):
@@ -161,6 +161,7 @@ single_multi_ratio_benchmarking(circuits)
 """
 NUMBER OF ENTANGLED GATES
 """
+
 entangling_gates_type = ['ecr', 'cx', 'cz', 'swap', 'h', 'ccx', 'crx', 'cry', 'crz']
 
 # Find entangling gates in transpiled circuits
@@ -206,5 +207,4 @@ def find_num_entagled_gates(circuits):
     plt.xticks(range(1, len(transpiled_circuits[3]) + 1))
     plt.show()
     
-
 find_num_entagled_gates(circuits)
