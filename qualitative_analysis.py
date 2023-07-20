@@ -146,6 +146,7 @@ def single_multi_ratio_benchmarking(circuits):
     plt.plot(x, e*x+f)  
     plt.legend()
     plt.show()  
+    
 single_multi_ratio_benchmarking(circuits)
 
 
