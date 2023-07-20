@@ -144,10 +144,12 @@ def single_multi_ratio_benchmarking(circuits):
 
 data = single_multi_ratio_benchmarking(circuits)
 
-
 """
 NUMBER OF ENTANGLED GATES
 """
+# count the entangled gates, and store the results before transpiling
+entangled_gate_counts = []
+
 # Dictionary to store transpiled circuits for each optimization level
 transpiled_circuits = {3: [],
                        2: [],
