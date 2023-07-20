@@ -5,6 +5,7 @@ from qiskit.compiler import transpile
 from qiskit.visualization import plot_gate_map
 from qiskit.visualization import plot_histogram, plot_bloch_multivector
 import matplotlib.pyplot as plt
+import numpy as np
 import os
 import re
 
@@ -22,7 +23,7 @@ def file_reader(file_path):
     return circuits
 
 # Read circuits from files
-circuits = file_reader("MQT_Circuits") # have to change folder directory for the circuits
+circuits = file_reader("tests") # have to change folder directory for the circuits
 
 # Select the transpilation backend
 backend = FakeSherbrooke()
@@ -64,6 +65,8 @@ def gate_count(circuits):
     plt.legend()
     plt.show()
 
+gate_count(circuits)
+
 """
 RATION: Single Qubit Gates : Multi Qubit Gates
 """
@@ -78,16 +81,11 @@ def num_single_and_multi_qubit_gates(circuit):
     return Map
 
 def single_multi_ratio_benchmarking(circuits):
-    
-    Map = {"Single" : 0, "Multi": 0}
-    
-    #These list will store the ratios (single // Multi ) of each circuit
+     #These list will store the ratios (single // Multi ) of each circuit
     level1_list = []
     level2_list = []
-    level3_list = []    
-    return_list = []
-    
-    counter = 0
+    level3_list = []       
+    circuit_counter = 0
     #Step 1: iterate through all circuits
     for circuit in circuits:
         #Transpilation is where the "divide by zero" errors occur
@@ -95,19 +93,16 @@ def single_multi_ratio_benchmarking(circuits):
         qc1 = transpile(circuit, optimization_level= 1, seed_transpiler= 42, backend=backend)
         qc2 = transpile(circuit, optimization_level= 2, seed_transpiler= 42, backend=backend)
         qc3 = transpile(circuit, optimization_level= 3, seed_transpiler= 42, backend=backend)
-        print(f"circuit index: {counter} :completed")
-        counter = counter + 1
+        print(f"circuit index: {circuit_counter} :completed")
+        circuit_counter = circuit_counter + 1
     
         
         #Step 2: Transpile the circuit with level 1, 2 and 3 and collect the data. The return type of this object is a Map with key value pairs 
-        # 'single' -- > Number of Single-Qubit Gates           'multi' --> Number of multi-qubit gates
+        # 'single' -- > Number of Single-Qubit Gates           'multi' --> Number of Multi-Qubit gates
         #Update Map Accordingly
         level1_data = num_single_and_multi_qubit_gates(qc1)
         level2_data = num_single_and_multi_qubit_gates(qc2)
         level3_data = num_single_and_multi_qubit_gates(qc3)
-        
-        Map["Single"] = level1_data['single'] + level2_data['single'] + level3_data['single']
-        Map["Multi"] = level1_data['multi'] + level2_data['multi'] + level3_data['multi']
         
         #Step 3: Prepare ratio and list that contains all the data
         if level1_data['multi'] > 0:
@@ -128,52 +123,81 @@ def single_multi_ratio_benchmarking(circuits):
         else:
             level3_list.append(level1_data['single'])
     
-        
-    return_list.append(level1_list), return_list.append(level2_list), return_list.append(level3_list)
-    number_of_circuits = [i + 1 for i in range(counter)]
+    number_of_circuits = [i + 2 for i in range(circuit_counter)] #Change this to the number of qubits possibly. 
+    x = np.array(number_of_circuits)
     
-    #Line 1 --> Optimization Level 1.. etc
-    plt.plot(number_of_circuits, level1_list , label = "Optimization Level 1")
-    plt.plot(number_of_circuits, level2_list, label = "Optimization Level 2")
-    plt.plot(number_of_circuits, level3_list, label = "Optimization Level 3")
+    #Calculating Line of BEST FIT: Optimization Level 1
+    a, b = np.polyfit(x, np.array(level1_list), 1)
+    #Calculating Line of BEST FIT: Optimization Level 2
+    c, d = np.polyfit(x, np.array(level2_list), 1)
+    #Calculating Line of BEST Fit: Optimization Lebel 3
+    e, f = np.polyfit(x, np.array(level3_list), 1)
+    
+    #--> Optimization Level 1.. etc lols
+    plt.scatter(number_of_circuits, level1_list , label = "Optimization Level 1")    
+    plt.plot(x, a*x+b) 
+    print("The rate of change for optimization Level 1 is: ", a)
+    print("The y-intercept for optimization level 1 is: ", b)
+    plt.scatter(number_of_circuits, level2_list, label = "Optimization Level 2")
+    plt.plot(x, c*x+d)  
+    print("The rate of change for optimization level 2 is: ", c)
+    print("The y-intercept for optimization level 2 is: ", d)
+    plt.scatter(number_of_circuits, level3_list, label = "Optimization Level 3")
+    print("The rate of change for optimization level 3 is: ", e)
+    print("The y-intercept for optimization level 3 is: ", f)
+    plt.plot(x, e*x+f)  
     plt.legend()
     plt.show()  
-    
-    return return_list
 
-data = single_multi_ratio_benchmarking(circuits)
+single_multi_ratio_benchmarking(circuits)
 
 """
 NUMBER OF ENTANGLED GATES
 """
-# count the entangled gates, and store the results before transpiling
-entangled_gate_counts = []
-
-# Dictionary to store transpiled circuits for each optimization level
-transpiled_circuits = {3: [],
-                       2: [],
-                       1: []} 
-
 entangling_gates_type = ['ecr', 'cx', 'cz', 'swap', 'h', 'ccx', 'crx', 'cry', 'crz']
 
 # Find entangling gates in transpiled circuits
-entagling_gates = []
-def find_entangled_qubits(transpiled_circuits):
-    for gate in transpiled_circuits:
-        entangled_gate_counts = []
-        if gate in entangling_gates_type:
-            entagling_gates.append(transpiled_circuits[gate])
+def find_num_entagled_gates(circuits):
+
+    # count the entangled gates, and store the results before transpiling
+    entangled_gate_counts = []
+    for circuit in circuits:
+        entangled_gate_count = sum([1 for gate in circuit if gate[0].name in entangling_gates_type])
+        entangled_gate_counts.append(entangled_gate_count)
+
+        # Dictionary to store transpiled circuits for each optimization level
+    transpiled_circuits = {3: [],
+                        2: [],
+                        1: []} 
+
+    for circuit in circuits:
+        for opt_level in [3, 2, 1]:
+            transpiled_circuit = transpile(circuit, backend, optimization_level=opt_level)
+            transpiled_circuits[opt_level].append(transpiled_circuit)
+
+
+    # Find entangling gates in transpiled circuits
+    entangled_gates = []
+    def find_entangled_qubits(transpiled_circuits):
+        for gate in transpiled_circuits:
+            if gate in entangling_gates_type:
+                entangled_gates.append(transpiled_circuits[gate])
+        
+        return entangled_gates
+
+    for circuit in transpiled_circuits[3]:
+        entangling_gates = find_entangled_qubits(circuit.count_ops())
+
+    # Plot the number of entangled gates before and after transpile to compare
+    plt.plot(range(1, len(transpiled_circuits[3]) + 1), entangling_gates, marker='o')
+    plt.plot(range(1, len(transpiled_circuits[2]) + 1), entangling_gates, marker='o')
+    plt.plot(range(1, len(transpiled_circuits[1]) + 1), entangling_gates, marker='o')
+    plt.plot(range(1, len(circuits) + 1), entangled_gate_counts, marker='o')
+    plt.xlabel('Circuit')
+    plt.ylabel('Entangled Gate Count')
+    plt.title('Number of Entangled Gates (normal vs transpiled)')
+    plt.xticks(range(1, len(transpiled_circuits[3]) + 1))
+    plt.show()
     
-    return entagling_gates
 
-for circuit in transpiled_circuits[3]:
-    entangling_gates = find_entangled_qubits(circuit.count_ops())
-
-# Plot the number of entangled gates before and after transpile to compare
-plt.plot(range(1, len(transpiled_circuits[3]) + 1), entangling_gates, marker='o')
-plt.plot(range(1, len(circuits) + 1), entangled_gate_counts, marker='o')
-plt.xlabel('Circuit')
-plt.ylabel('Entangled Gate Count')
-plt.title('Number of Entangled Gates (normal vs transpiled v3)')
-plt.xticks(range(1, len(transpiled_circuits[3]) + 1))
-plt.show()
+find_num_entagled_gates(circuits)
