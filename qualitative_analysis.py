@@ -77,16 +77,13 @@ def num_single_and_multi_qubit_gates(circuit):
     return Map
 
 def single_multi_ratio_benchmarking(circuits):
-    
-    Map = {"Single" : 0, "Multi": 0}
-    
-    #These list will store the ratios (single // Multi ) of each circuit
+            #These list will store the ratios (single // Multi ) of each circuit
     level1_list = []
     level2_list = []
     level3_list = []    
     return_list = []
     
-    counter = 0
+    circuit_counter = 0
     #Step 1: iterate through all circuits
     for circuit in circuits:
         #Transpilation is where the "divide by zero" errors occur
@@ -94,19 +91,16 @@ def single_multi_ratio_benchmarking(circuits):
         qc1 = transpile(circuit, optimization_level= 1, seed_transpiler= 42, backend=backend)
         qc2 = transpile(circuit, optimization_level= 2, seed_transpiler= 42, backend=backend)
         qc3 = transpile(circuit, optimization_level= 3, seed_transpiler= 42, backend=backend)
-        print(f"circuit index: {counter} :completed")
-        counter = counter + 1
+        print(f"circuit index: {circuit_counter} :completed")
+        circuit_counter = circuit_counter + 1
     
         
         #Step 2: Transpile the circuit with level 1, 2 and 3 and collect the data. The return type of this object is a Map with key value pairs 
-        # 'single' -- > Number of Single-Qubit Gates           'multi' --> Number of multi-qubit gates
+        # 'single' -- > Number of Single-Qubit Gates           'multi' --> Number of Multi-Qubit gates
         #Update Map Accordingly
         level1_data = num_single_and_multi_qubit_gates(qc1)
         level2_data = num_single_and_multi_qubit_gates(qc2)
         level3_data = num_single_and_multi_qubit_gates(qc3)
-        
-        Map["Single"] = level1_data['single'] + level2_data['single'] + level3_data['single']
-        Map["Multi"] = level1_data['multi'] + level2_data['multi'] + level3_data['multi']
         
         #Step 3: Prepare ratio and list that contains all the data
         if level1_data['multi'] > 0:
@@ -129,12 +123,29 @@ def single_multi_ratio_benchmarking(circuits):
     
         
     return_list.append(level1_list), return_list.append(level2_list), return_list.append(level3_list)
-    number_of_circuits = [i + 1 for i in range(counter)]
+    number_of_circuits = [i + 2 for i in range(circuit_counter)] #Change this to the number of qubits possibly. 
+    x = np.array(number_of_circuits)
     
-    #Line 1 --> Optimization Level 1.. etc
-    plt.plot(number_of_circuits, level1_list , label = "Optimization Level 1")
-    plt.plot(number_of_circuits, level2_list, label = "Optimization Level 2")
-    plt.plot(number_of_circuits, level3_list, label = "Optimization Level 3")
+    #Calculating Line of BEST FIT: Optimization Level 1
+    a, b = np.polyfit(x, np.array(level1_list), 1)
+    #Calculating Line of BEST FIT: Optimization Level 2
+    c, d = np.polyfit(x, np.array(level2_list), 1)
+    #Calculating Line of BEST Fit: Optimization Lebel 3
+    e, f = np.polyfit(x, np.array(level3_list), 1)
+    
+    #--> Optimization Level 1.. etc lols
+    plt.scatter(number_of_circuits, level1_list , label = "Optimization Level 1")    
+    plt.plot(x, a*x+b) 
+    print("The rate of change for optimization Level 1 is: ", a)
+    print("The y-intercept for optimization level 1 is: ", b)
+    plt.scatter(number_of_circuits, level2_list, label = "Optimization Level 2")
+    plt.plot(x, c*x+d)  
+    print("The rate of change for optimization level 2 is: ", c)
+    print("The y-intercept for optimization level 2 is: ", d)
+    plt.scatter(number_of_circuits, level3_list, label = "Optimization Level 3")
+    print("The rate of change for optimization level 3 is: ", e)
+    print("The y-intercept for optimization level 3 is: ", f)
+    plt.plot(x, e*x+f)  
     plt.legend()
     plt.show()  
     
