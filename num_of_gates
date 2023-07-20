@@ -29,66 +29,41 @@ def file_reader(file_path):
 
     return circuits
 
-# # Responsible for creating circuits of random size and depth
-# for i in range(50):
-#     num_qubits = random.randint(1,10)
-#     depth = random.randint(1,10)
-#     qc = random_circuit(num_qubits, depth, measure=True)
-#     random_circuits.append(qc)
-
-# random_circuits
-
 # Select your backend (e.g., Aer's qasm_simulator)
 backend = FakeSherbrooke()
 
 # Read circuits from files
 circuits = file_reader("tests")
 
-# # Dictionary to store transpiled circuits for each optimization level
-# transpiled_circuits = {3: [],
-#                        2: [],
-#                        1: []} 
-
 # Transpile each circuit, count the gates, and store the results
 gate_counts = []
+opt1 = []
+opt2 = []
+opt3 = []
 for circuit in circuits:
     # stores the number of gates 
-    transpiled_circuit = transpile(circuit, backend)
-    gate_count = transpiled_circuit.count_ops()
-    gate_counts.append(sum(gate_count.values()))
+    transpiled_circuit_1 = transpile(circuit, backend, optimization_level=1)
+    transpiled_circuit_2 = transpile(circuit, backend, optimization_level=2)
+    transpiled_circuit_3 = transpile(circuit, backend, optimization_level=3)
+
+    # counts the number of gates in a given circuit
+    opt1_count = transpiled_circuit_1.count_ops()
+    opt2_count = transpiled_circuit_2.count_ops()
+    opt3_count = transpiled_circuit_3.count_ops()
+
+    # appends our count of the transpiled circuit to the array
+    opt1.append(sum(opt1_count.values()))
+    opt2.append(sum(opt2_count.values()))
+    opt3.append(sum(opt3_count.values()))
 
 
-    # # stores the number of entangled gates 
-    # entangled_gate_counts = []
-
-    # for opt_level in [3, 2, 1]:
-    #     transpiled_circuit = transpile(circuit, backend, optimization_level=opt_level)
-    #     transpiled_circuits[opt_level].append(transpiled_circuit)
-
-    #     # counts the number of gates in a given circuit
-    #     gate_count = transpiled_circuit.count_ops()
-    #     gate_counts.append(sum(gate_count.values()))
-
-# Generate a graph to visualize the gate counts
-
-plt.plot(range(1, len(circuits) + 1), gate_counts, marker='o')
+# Generate a graph to visualize the gate counts for optimization level 1
+plt.plot(range(1, len(circuits) + 1), opt1, label = "Optimization Level 1")
+plt.plot(range(1, len(circuits) + 1), opt2, label = "Optimization Level 2")
+plt.plot(range(1, len(circuits) + 1), opt3, label = "Optimization Level 3")
 plt.xlabel('Circuit')
 plt.ylabel('Gate Count')
 plt.title('Gate Count of Transpiled Circuits')
 plt.xticks(range(1, len(circuits) + 1))
+plt.legend()
 plt.show()
-
-# gate_counts = []
-# for circuit in circuits: #os.listdir(circuit_tests_path) if we used a file with random circuits ready to be tested
-#     #circuit = os.path.join(circuit, circuit_tests_path)
-#     transpiled_circuit = transpile(circuit, backend)
-#     gate_count = transpiled_circuit.count_ops()
-#     gate_counts.append(sum(gate_count.values()))
-
-# # Generate a graph to visualize the gate counts
-# plt.plot(range(1, len(circuits) + 1), gate_counts, marker='o')
-# plt.xlabel('Circuit')
-# plt.ylabel('Gate Count')
-# plt.title('Gate Count of Transpiled Circuits')
-# plt.xticks(range(1, len(circuits) + 1))
-# plt.show()

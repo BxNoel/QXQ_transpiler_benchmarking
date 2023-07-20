@@ -27,38 +27,41 @@ circuits = file_reader("MQT_Circuits") # have to change folder directory for the
 # Select the transpilation backend
 backend = FakeSherbrooke()
 
-# Dictionary to store transpiled circuits for each optimization level
-transpiled_circuits = {3: [],
-                       2: [],
-                       1: []} 
 
 """
 COUNT NUMBER OF GATES
 """
-
-# Here we are transpiling the circuits and storing them in the dictionary
+# Transpile each circuit, count the gates, and store the results
+gate_counts = []
+opt1 = []
+opt2 = []
+opt3 = []
 for circuit in circuits:
-
     # stores the number of gates 
-    gate_counts = []
+    transpiled_circuit_1 = transpile(circuit, backend, optimization_level=1)
+    transpiled_circuit_2 = transpile(circuit, backend, optimization_level=2)
+    transpiled_circuit_3 = transpile(circuit, backend, optimization_level=3)
 
-    # stores the number of entangled gates 
-    entangled_gate_counts = []
+    # counts the number of gates in a given circuit
+    opt1_count = transpiled_circuit_1.count_ops()
+    opt2_count = transpiled_circuit_2.count_ops()
+    opt3_count = transpiled_circuit_3.count_ops()
 
-    for opt_level in [3, 2, 1]:
-        transpiled_circuit = transpile(circuit, backend, optimization_level=opt_level)
-        transpiled_circuits[opt_level].append(transpiled_circuit)
+    # appends our count of the transpiled circuit to the array
+    opt1.append(sum(opt1_count.values()))
+    opt2.append(sum(opt2_count.values()))
+    opt3.append(sum(opt3_count.values()))
 
-        # counts the number of gates in a given circuit
-        gate_count = transpiled_circuit.count_ops()
-        gate_counts.append(sum(gate_count.values()))
 
-# Generate a graph to visualize the gate counts
-plt.plot(range(1, len(circuits) + 1), gate_counts, marker='o')
+# Generate a graph to visualize the gate counts for optimization level 1
+plt.plot(range(1, len(circuits) + 1), opt1, label = "Optimization Level 1")
+plt.plot(range(1, len(circuits) + 1), opt2, label = "Optimization Level 2")
+plt.plot(range(1, len(circuits) + 1), opt3, label = "Optimization Level 3")
 plt.xlabel('Circuit')
 plt.ylabel('Gate Count')
 plt.title('Gate Count of Transpiled Circuits')
 plt.xticks(range(1, len(circuits) + 1))
+plt.legend()
 plt.show()
 
 
@@ -145,12 +148,18 @@ data = single_multi_ratio_benchmarking(circuits)
 """
 NUMBER OF ENTANGLED GATES
 """
+# Dictionary to store transpiled circuits for each optimization level
+transpiled_circuits = {3: [],
+                       2: [],
+                       1: []} 
+
 entangling_gates_type = ['ecr', 'cx', 'cz', 'swap', 'h', 'ccx', 'crx', 'cry', 'crz']
 
 # Find entangling gates in transpiled circuits
 entagling_gates = []
 def find_entangled_qubits(transpiled_circuits):
     for gate in transpiled_circuits:
+        entangled_gate_counts = []
         if gate in entangling_gates_type:
             entagling_gates.append(transpiled_circuits[gate])
     
