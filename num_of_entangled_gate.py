@@ -54,30 +54,14 @@ def find_num_entagled_gates(circuits):
     for circuit in transpiled_circuits[3]:
         entangling_gates = find_entangled_qubits(circuit.count_ops())
 
-    # Plot the number of entangled gates before and after transpile to compare (lvl 3)
+    # Plot the number of entangled gates before and after transpile to compare
     plt.plot(range(1, len(transpiled_circuits[3]) + 1), entangling_gates, marker='o')
-    plt.plot(range(1, len(circuits) + 1), entangled_gate_counts, marker='o')
-    plt.xlabel('Circuit')
-    plt.ylabel('Entangled Gate Count')
-    plt.title('Number of Entangled Gates (normal vs transpiled v3)')
-    plt.xticks(range(1, len(transpiled_circuits[3]) + 1))
-    plt.show()
-
-    # Plot the number of entangled gates before and after transpile to compare (lvl 2)
     plt.plot(range(1, len(transpiled_circuits[2]) + 1), entangling_gates, marker='o')
-    plt.plot(range(1, len(circuits) + 1), entangled_gate_counts, marker='o')
-    plt.xlabel('Circuit')
-    plt.ylabel('Entangled Gate Count')
-    plt.title('Number of Entangled Gates (normal vs transpiled v2)')
-    plt.xticks(range(1, len(transpiled_circuits[3]) + 1))
-    plt.show()
-
-    # Plot the number of entangled gates before and after transpile to compare (lvl 1)
     plt.plot(range(1, len(transpiled_circuits[1]) + 1), entangling_gates, marker='o')
     plt.plot(range(1, len(circuits) + 1), entangled_gate_counts, marker='o')
     plt.xlabel('Circuit')
     plt.ylabel('Entangled Gate Count')
-    plt.title('Number of Entangled Gates (normal vs transpiled v1)')
+    plt.title('Number of Entangled Gates (normal vs transpiled)')
     plt.xticks(range(1, len(transpiled_circuits[3]) + 1))
     plt.show()
 
