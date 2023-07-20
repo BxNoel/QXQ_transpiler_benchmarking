@@ -77,12 +77,10 @@ def num_single_and_multi_qubit_gates(circuit):
     return Map
 
 def single_multi_ratio_benchmarking(circuits):
-            #These list will store the ratios (single // Multi ) of each circuit
+    #These list will store the ratios (single // Multi ) of each circuit
     level1_list = []
     level2_list = []
-    level3_list = []    
-    return_list = []
-    
+    level3_list = []       
     circuit_counter = 0
     #Step 1: iterate through all circuits
     for circuit in circuits:
@@ -148,10 +146,7 @@ def single_multi_ratio_benchmarking(circuits):
     plt.plot(x, e*x+f)  
     plt.legend()
     plt.show()  
-    
-    return return_list
-
-data = single_multi_ratio_benchmarking(circuits)
+single_multi_ratio_benchmarking(circuits)
 
 
 """
