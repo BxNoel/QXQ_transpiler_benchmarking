@@ -27,43 +27,42 @@ circuits = file_reader("MQT_Circuits") # have to change folder directory for the
 # Select the transpilation backend
 backend = FakeSherbrooke()
 
-
 """
 COUNT NUMBER OF GATES
 """
-# Transpile each circuit, count the gates, and store the results
-gate_counts = []
-opt1 = []
-opt2 = []
-opt3 = []
-for circuit in circuits:
-    # stores the number of gates 
-    transpiled_circuit_1 = transpile(circuit, backend, optimization_level=1)
-    transpiled_circuit_2 = transpile(circuit, backend, optimization_level=2)
-    transpiled_circuit_3 = transpile(circuit, backend, optimization_level=3)
+def gate_count(circuits):
+    # Transpile each circuit, count the gates, and store the results
+    gate_counts = []
+    opt1 = []
+    opt2 = []
+    opt3 = []
+    for circuit in circuits:
+        # stores the number of gates 
+        transpiled_circuit_1 = transpile(circuit, backend, optimization_level=1)
+        transpiled_circuit_2 = transpile(circuit, backend, optimization_level=2)
+        transpiled_circuit_3 = transpile(circuit, backend, optimization_level=3)
 
-    # counts the number of gates in a given circuit
-    opt1_count = transpiled_circuit_1.count_ops()
-    opt2_count = transpiled_circuit_2.count_ops()
-    opt3_count = transpiled_circuit_3.count_ops()
+        # counts the number of gates in a given circuit
+        opt1_count = transpiled_circuit_1.count_ops()
+        opt2_count = transpiled_circuit_2.count_ops()
+        opt3_count = transpiled_circuit_3.count_ops()
 
-    # appends our count of the transpiled circuit to the array
-    opt1.append(sum(opt1_count.values()))
-    opt2.append(sum(opt2_count.values()))
-    opt3.append(sum(opt3_count.values()))
+        # appends our count of the transpiled circuit to the array
+        opt1.append(sum(opt1_count.values()))
+        opt2.append(sum(opt2_count.values()))
+        opt3.append(sum(opt3_count.values()))
 
 
-# Generate a graph to visualize the gate counts for optimization level 1
-plt.plot(range(1, len(circuits) + 1), opt1, label = "Optimization Level 1")
-plt.plot(range(1, len(circuits) + 1), opt2, label = "Optimization Level 2")
-plt.plot(range(1, len(circuits) + 1), opt3, label = "Optimization Level 3")
-plt.xlabel('Circuit')
-plt.ylabel('Gate Count')
-plt.title('Gate Count of Transpiled Circuits')
-plt.xticks(range(1, len(circuits) + 1))
-plt.legend()
-plt.show()
-
+    # Generate a graph to visualize the gate counts for optimization level 1
+    plt.plot(range(1, len(circuits) + 1), opt1, label = "Optimization Level 1")
+    plt.plot(range(1, len(circuits) + 1), opt2, label = "Optimization Level 2")
+    plt.plot(range(1, len(circuits) + 1), opt3, label = "Optimization Level 3")
+    plt.xlabel('Circuit')
+    plt.ylabel('Gate Count')
+    plt.title('Gate Count of Transpiled Circuits')
+    plt.xticks(range(1, len(circuits) + 1))
+    plt.legend()
+    plt.show()
 
 """
 RATION: Single Qubit Gates : Multi Qubit Gates
