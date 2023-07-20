@@ -5,6 +5,7 @@ from qiskit.compiler import transpile
 from qiskit.visualization import plot_gate_map
 from qiskit.visualization import plot_histogram, plot_bloch_multivector
 import matplotlib.pyplot as plt
+import numpy as np
 import os
 
 # Path to the circuits stored locally
@@ -12,7 +13,7 @@ def file_reader(file_path):
     circuits = []
     directory = file_path
     for circuit in os.listdir(directory):
-        circuit_path = file_path + "/" + circuit
+        circuit_path = f"{file_path}/{circuit}"
         if(circuit_path.endswith('.qasm')):
             print(circuit_path)
             qc = QuantumCircuit.from_qasm_file(circuit_path)
@@ -77,6 +78,7 @@ def num_single_and_multi_qubit_gates(circuit):
     return Map
 
 def single_multi_ratio_benchmarking(circuits):
+    
     #These list will store the ratios (single // Multi ) of each circuit
     level1_list = []
     level2_list = []
@@ -119,8 +121,6 @@ def single_multi_ratio_benchmarking(circuits):
         else:
             level3_list.append(level1_data['single'])
     
-        
-    return_list.append(level1_list), return_list.append(level2_list), return_list.append(level3_list)
     number_of_circuits = [i + 2 for i in range(circuit_counter)] #Change this to the number of qubits possibly. 
     x = np.array(number_of_circuits)
     
