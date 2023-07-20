@@ -9,11 +9,18 @@ import numpy as np
 import os
 import re
 
+# This sorts our ciruits in ascending ordering via number of qubits
+num = re.compile(r'(\d+)')
+def ascending_sort(val):
+    split = num.split(val)
+    split[1::2] = map(int, split[1::2])
+    return split
+
 # Path to the circuits stored locally
 def file_reader(file_path):
     circuits = []
     directory = file_path
-    for circuit in os.listdir(directory):
+    for circuit in sorted(os.listdir(directory), key=ascending_sort):
         circuit_path = file_path + "/" + circuit
         if (circuit_path.endswith('.qasm')):
             print(circuit_path)
