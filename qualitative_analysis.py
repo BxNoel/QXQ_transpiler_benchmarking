@@ -8,8 +8,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 
-backend = FakeSherbrooke()
-
 #This method is used to sort the circuits:
 def sort_circuit(circuits):
     for i in range(len(circuits)):
@@ -22,7 +20,6 @@ def sort_circuit(circuits):
                 circuits[i] = circuits[j]
                 circuits[j] = qc
                 
-
 # Path to the circuits stored locally
 def file_reader(file_path):
     backend = FakeSherbrooke()
@@ -52,9 +49,6 @@ def file_reader(file_path):
         counter = counter + 1
         
     return optimization_level #Returns a Map, that has optimization Level pointing to a list of circuits corresponding to that 
-
-# Read circuits from files
-transpiled_circuits = file_reader("/Users/noelnegron/Desktop/DJ_Algorithms") # have to change folder directory for the circuits
 
 """
 COUNT NUMBER OF GATES
@@ -166,8 +160,6 @@ def single_multi_ratio_benchmarking(optimization_levels):
 """
 NUMBER OF ENTANGLED GATES
 """
-
-
 def find_num_entagled_gates(optimization_levels):
     entangling_gates_type = ['ecr', 'cx', 'cz', 'swap', 'h', 'ccx', 'crx', 'cry', 'crz']
     # count the entangled gates, and store the results before transpiling
@@ -181,10 +173,10 @@ def find_num_entagled_gates(optimization_levels):
     def find_entangled_qubits(transpiled_circuits):
         for gate in transpiled_circuits:
             if gate in entangling_gates_type:
-                entangled_gates.append(transpiled_circuits[gate])
+                entangled_gates.append(transpiled_circuits[gate] )
         
         return entangled_gates
-
+    
     for circuit in optimization_levels[3]:
         entangling_gates = find_entangled_qubits(circuit.count_ops())
 
@@ -198,6 +190,8 @@ def find_num_entagled_gates(optimization_levels):
     plt.legend()
     plt.show()
 
+backend = FakeSherbrooke()
+transpiled_circuits = file_reader("/Users/noelnegron/Desktop/DJ_Algorithms") # have to change folder directory for the circuits
 gate_count(transpiled_circuits)
 single_multi_ratio_benchmarking(transpiled_circuits)
 find_num_entagled_gates(transpiled_circuits)
