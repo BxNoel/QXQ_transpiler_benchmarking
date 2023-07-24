@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 
-#This method is used to sort the circuits:
+
 def sort_circuit(circuits):
     for i in range(len(circuits)):
         min_qubits = circuits[i].num_qubits
