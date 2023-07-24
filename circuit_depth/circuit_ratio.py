@@ -58,7 +58,7 @@ def num_single_and_multi_qubit_gates(circuit):
     return Map
 
 def single_multi_ratio_benchmarking(circuits):
-        #These list will store the ratios (single // Multi ) of each circuit
+    #These list will store the ratios (single // Multi ) of each circuit
     level1_list = []
     level2_list = []
     level3_list = []    
@@ -133,6 +133,6 @@ def single_multi_ratio_benchmarking(circuits):
     
     return return_list
 
-MQTCircuits = file_reader("/Users/noelnegron/Desktop/DJ_Algorithms")
+MQTCircuits = file_reader("/Users/noelnegron/QXQ_transpiler_benchmarking/MQT_Circuits")
 sort_circuit(MQTCircuits)
 data = single_multi_ratio_benchmarking(MQTCircuits)
