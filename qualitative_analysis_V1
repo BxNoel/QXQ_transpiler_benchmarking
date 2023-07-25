@@ -58,7 +58,7 @@ def file_reader(file_path):
         ttime_level2 = []
         ttime_level3 = []
 
-        for _ in NUM_ITERATIONS:
+        for _ in range(NUM_ITERATIONS):
             # Raw data for transpling times (five values)
             # Clears after for loop end 
 
@@ -99,7 +99,7 @@ def file_reader(file_path):
     avg_level3 = transpile_times_3
 
     #Number of qubits in the sorted circuit
-    number_of_qubits = [i + 2 for i in range(len(optimization_levels[1]))] #num of qubits 
+    number_of_qubits = [i + 2 for i in range(len(transpile_times_1))] #num of qubits 
     
     x = np.array(number_of_qubits)
 
@@ -119,7 +119,7 @@ def file_reader(file_path):
     plt.plot(x, e*x+b)
     plt.xlabel('Number of Qubits')
     plt.ylabel('Runtime in Seconds')
-    plt.title('Runtime in Seconds (at each opt level')
+    plt.title('Runtime in Seconds (at each opt level)')
     plt.legend()
     plt.show()
     #----------------------------------
@@ -274,7 +274,7 @@ def find_num_entagled_gates(optimization_levels):
     plt.show()
 
 backend = FakeSherbrooke()
-transpiled_circuits = file_reader("/Users/catherinelozano/Desktop/DJ_Algorithms") # have to change folder directory for the circuits
+transpiled_circuits = file_reader("/Users/catherinelozano/Desktop/DEMO") # have to change folder directory for the circuits
 gate_count(transpiled_circuits)
 single_multi_ratio_benchmarking(transpiled_circuits)
 find_num_entagled_gates(transpiled_circuits)
