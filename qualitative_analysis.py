@@ -7,26 +7,23 @@ from qiskit.visualization import plot_histogram, plot_bloch_multivector
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+import re
 
 
-def sort_circuit(circuits):
-    for i in range(len(circuits)):
-        min_qubits = circuits[i].num_qubits
-        for j in range(len(circuits)):
-            temp_qubits = circuits[j].num_qubits
-            if min_qubits < temp_qubits:
-                min_qubits = temp_qubits
-                qc = circuits[i]
-                circuits[i] = circuits[j]
-                circuits[j] = qc
-                
+# This sorts our ciruits in ascending ordering via number of qubits
+num = re.compile(r'(\d+)')
+def ascending_sort(val):
+    split = num.split(val)
+    split[1::2] = map(int, split[1::2])
+    return split
+
 # Path to the circuits stored locally
 def file_reader(file_path):
     backend = FakeSherbrooke()
     circuits = []
     optimization_level= {3: [],2: [], 1: [], 0: []}
     directory = file_path
-    for circuit in os.listdir(directory):
+    for circuit in sorted(os.listdir(directory), key=ascending_sort):
         circuit_path = f"{file_path}/{circuit}"
         if(circuit_path.endswith('.qasm')):
             print(circuit_path)
@@ -34,7 +31,7 @@ def file_reader(file_path):
             circuits.append(qc)
             
     #Sorts Circuits Before Transpiling:
-    sort_circuit(circuits)
+    #sort_circuit(circuits)
         
     counter = 0
     for circuit in circuits:
@@ -191,7 +188,7 @@ def find_num_entagled_gates(optimization_levels):
     plt.show()
 
 backend = FakeSherbrooke()
-transpiled_circuits = file_reader("/Users/noelnegron/Desktop/DJ_Algorithms") # have to change folder directory for the circuits
+transpiled_circuits = file_reader("tests") # have to change folder directory for the circuits
 gate_count(transpiled_circuits)
 single_multi_ratio_benchmarking(transpiled_circuits)
 find_num_entagled_gates(transpiled_circuits)
