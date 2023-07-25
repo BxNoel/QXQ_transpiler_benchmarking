@@ -5,7 +5,6 @@ from qiskit.compiler import transpile
 from qiskit.visualization import plot_gate_map
 from qiskit.visualization import plot_histogram, plot_bloch_multivector
 from statistics import mean
-
 import matplotlib.pyplot as plt
 import numpy as np
 import time
@@ -39,11 +38,6 @@ def file_reader(file_path):
     #Sorts Circuits Before Transpiling:
     sort_circuit(circuits)
 
-    #Std of transplie times (one value)
-    transpile_times_std_1 = []
-    transpile_times_std_2 = []
-    transpile_times_std_3 = []
-
     #Average of transpile times
     transpile_times_1 = []
     transpile_times_2 = []
@@ -54,6 +48,7 @@ def file_reader(file_path):
     for circuit in circuits:
 
         NUM_ITERATIONS = 5
+        
         ttime_level1 = []
         ttime_level2 = []
         ttime_level3 = []
@@ -94,35 +89,30 @@ def file_reader(file_path):
     num_circuits = len(circuits) #gathers total number of circuits
     plt.figure(figsize=(12, 6))
 
-    avg_level1 = transpile_times_1
-    avg_level2 = transpile_times_2
-    avg_level3 = transpile_times_3
-
     #Number of qubits in the sorted circuit
     number_of_qubits = [i + 2 for i in range(len(transpile_times_1))] #num of qubits 
     
     x = np.array(number_of_qubits)
 
     #Calculating Line of BEST FIT: Optimization Level 1
-    a, b = np.polyfit(x, np.array(avg_level1), 1)
+    a, b = np.polyfit(x, np.array(transpile_times_1), 1)
     #Calculating Line of BEST FIT: Optimization Level 2
-    c, d = np.polyfit(x, np.array(avg_level2), 1)
+    c, d = np.polyfit(x, np.array(transpile_times_2), 1)
     #Calculating Line of BEST Fit: Optimization Lebel 3
-    e, f = np.polyfit(x, np.array(avg_level3), 1)
+    e, f = np.polyfit(x, np.array(transpile_times_3), 1)
 
 
-    plt.scatter(number_of_qubits, avg_level1, label = "Average of Opt Level 1")
+    plt.scatter(number_of_qubits, transpile_times_1, label = "Average of Opt Level 1")
     plt.plot(x, a*x+b)
-    plt.scatter(number_of_qubits, avg_level2, label = "Average of Opt Level 2")
+    plt.scatter(number_of_qubits, transpile_times_2, label = "Average of Opt Level 2")
     plt.plot(x, c*x+b)
-    plt.scatter(number_of_qubits, avg_level3, label = "Average of Opt Level 3")
+    plt.scatter(number_of_qubits, transpile_times_3, label = "Average of Opt Level 3")
     plt.plot(x, e*x+b)
     plt.xlabel('Number of Qubits')
     plt.ylabel('Runtime in Seconds')
     plt.title('Runtime in Seconds (at each opt level)')
     plt.legend()
     plt.show()
-    #----------------------------------
 
     optimization_level[1].append(qc1)
     optimization_level[2].append(qc2)
