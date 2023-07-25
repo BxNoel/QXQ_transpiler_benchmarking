@@ -4,13 +4,14 @@ from qiskit.providers.fake_provider import FakeSherbrooke
 from qiskit.compiler import transpile
 from qiskit.visualization import plot_gate_map
 from qiskit.visualization import plot_histogram, plot_bloch_multivector
-import matplotlib.pyplot as plt
 from statistics import mean
+
+import matplotlib.pyplot as plt
 import numpy as np
 import time
 import os
 
-
+#Sorts files in circuits by qubits
 def sort_circuit(circuits):
     for i in range(len(circuits)):
         min_qubits = circuits[i].num_qubits
@@ -38,39 +39,41 @@ def file_reader(file_path):
     #Sorts Circuits Before Transpiling:
     sort_circuit(circuits)
 
-    #Average of transpling (one value)
+    #Std of transplie times (one value)
     transpile_times_std_1 = []
     transpile_times_std_2 = []
     transpile_times_std_3 = []
 
+    #Average of transpile times
+    transpile_times_1 = []
+    transpile_times_2 = []
+    transpile_times_3 = []
+
     counter = 0
+    #Iterates through circuits and transplies and takes the runtime
     for circuit in circuits:
 
         NUM_ITERATIONS = 5
+        ttime_level1 = []
+        ttime_level2 = []
+        ttime_level3 = []
 
         for _ in NUM_ITERATIONS:
-
             # Raw data for transpling times (five values)
             # Clears after for loop end 
-            transpile_times_1 = [] 
-            transpile_times_2 = []
-            transpile_times_3 = []
 
-            ttime_level1 = []
             #Transpilation for level 1
             start_time = time.perf_counter()
             qc1 = transpile(circuit, optimization_level= 1, seed_transpiler= 42, backend=backend)
             stop_time = time.perf_counter()
             ttime_level1.append(stop_time - start_time) #stores in temp array five values
 
-            ttime_level2 = []
             #Transiplation for level 2
             start_time = time.perf_counter()
             qc2 = transpile(circuit, optimization_level= 2, seed_transpiler= 42, backend=backend)
             stop_time = time.perf_counter()
             ttime_level2.append(stop_time - start_time) #stores in temp array five values
 
-            ttime_level3 = []
             #Transiplation for level 3
             start_time = time.perf_counter()
             qc3 = transpile(circuit, optimization_level= 3, seed_transpiler= 42, backend=backend)
@@ -79,44 +82,55 @@ def file_reader(file_path):
 
         #Take average of each runtime array for each level
         mean_transpile_time = mean(ttime_level1)
-        std_transpile_time = np.std(ttime_level1)
         transpile_times_1.append(mean_transpile_time)
-        transpile_times_std_1.append(std_transpile_time)
 
         mean_transpile_time = mean(ttime_level2)
-        std_transpile_time = np.std(ttime_level2)
         transpile_times_2.append(mean_transpile_time)
-        transpile_times_std_2.append(std_transpile_time)
 
         mean_transpile_time = mean(ttime_level3)
-        std_transpile_time = np.std(ttime_level3)
         transpile_times_3.append(mean_transpile_time)
-        transpile_times_std_3.append(std_transpile_time)
 
-        #Scatter Plot for Runtime
-        num_circuits = len(circuits)
-        num_opt_levels = 3
-        x_ticks = np.arange(num_circuits)
-        colors = plt.cm.viridis(np.linspace(0, 1, num_opt_levels))
-        plt.figure(figsize=(12, 6))
+    #Scatter Plot for Runtime after all values are collected
+    num_circuits = len(circuits) #gathers total number of circuits
+    plt.figure(figsize=(12, 6))
 
-        # Plot average transpilation time at each optimization level
-    for i, num_opt_levels in enumerate(optimization_levels):
-        #------  Need to fix this ---------
-        opt_transpile_times = transpile_times[i::num_opt_levels]
+    avg_level1 = transpile_times_1
+    avg_level2 = transpile_times_2
+    avg_level3 = transpile_times_3
 
-        x = x_ticks + i * (1 / num_opt_levels) - 0.5
-        plt.scatter(x, num_opt_levels, color=colors[i], label=f'Opt. Level {num_opt_level}')
+    #Number of qubits in the sorted circuit
+    number_of_qubits = [i + 2 for i in range(len(optimization_levels[1]))] #num of qubits 
+    
+    x = np.array(number_of_qubits)
 
+    #Calculating Line of BEST FIT: Optimization Level 1
+    a, b = np.polyfit(x, np.array(avg_level1), 1)
+    #Calculating Line of BEST FIT: Optimization Level 2
+    c, d = np.polyfit(x, np.array(avg_level2), 1)
+    #Calculating Line of BEST Fit: Optimization Lebel 3
+    e, f = np.polyfit(x, np.array(avg_level3), 1)
+
+
+    plt.scatter(number_of_qubits, avg_level1, label = "Average of Opt Level 1")
+    plt.plot(x, a*x+b)
+    plt.scatter(number_of_qubits, avg_level2, label = "Average of Opt Level 2")
+    plt.plot(x, c*x+b)
+    plt.scatter(number_of_qubits, avg_level3, label = "Average of Opt Level 3")
+    plt.plot(x, e*x+b)
+    plt.xlabel('Number of Qubits')
+    plt.ylabel('Runtime in Seconds')
+    plt.title('Runtime in Seconds (at each opt level')
+    plt.legend()
+    plt.show()
     #----------------------------------
 
-        optimization_level[1].append(qc1)
-        optimization_level[2].append(qc2)
-        optimization_level[3].append(qc3)
-        optimization_level[0].append(circuit)
-        print(f"circuit index: {counter} :completed")
-        counter = counter + 1
-        
+    optimization_level[1].append(qc1)
+    optimization_level[2].append(qc2)
+    optimization_level[3].append(qc3)
+    optimization_level[0].append(circuit)
+    print(f"circuit index: {counter} :completed")
+    counter = counter + 1   
+    
     return optimization_level #Returns a Map, that has optimization Level pointing to a list of circuits corresponding to that 
 
 """
@@ -196,7 +210,7 @@ def single_multi_ratio_benchmarking(optimization_levels):
     
         
     return_list.append(level1_list), return_list.append(level2_list), return_list.append(level3_list)
-    number_of_circuits = [i + 2 for i in range(len(optimization_levels[1]))]
+    number_of_circuits = [i + 2 for i in range(len(optimization_levels[1]))] #num of qubits 
     
     x = np.array(number_of_circuits)
     
@@ -260,7 +274,7 @@ def find_num_entagled_gates(optimization_levels):
     plt.show()
 
 backend = FakeSherbrooke()
-transpiled_circuits = file_reader("/Users/noelnegron/Desktop/DJ_Algorithms") # have to change folder directory for the circuits
+transpiled_circuits = file_reader("/Users/catherinelozano/Desktop/DJ_Algorithms") # have to change folder directory for the circuits
 gate_count(transpiled_circuits)
 single_multi_ratio_benchmarking(transpiled_circuits)
 find_num_entagled_gates(transpiled_circuits)
