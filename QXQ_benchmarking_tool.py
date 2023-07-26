@@ -20,9 +20,7 @@ def ascending_sort(val):
 
 # Path to the circuits stored locally
 def file_reader(file_path):
-    backend = FakeSherbrooke()
     circuits = []
-    optimization_level= {3: [], 2: [], 1: [], 0: []}
     directory = file_path
     for circuit in sorted(os.listdir(directory), key=ascending_sort):
         circuit_path = f"{file_path}/{circuit}"
@@ -30,6 +28,7 @@ def file_reader(file_path):
             print(circuit_path)
             qc = QuantumCircuit.from_qasm_file(circuit_path)
             circuits.append(qc)
+    return circuits
 
 #This calculates runtimes and returns a completed analysis of a directory of circuits. 
 #THIS METHOD ALSO returns a MAPPING of all circuits to a corresponding optimization level.
@@ -221,9 +220,7 @@ def single_multi_ratio_benchmarking(optimization_levels):
     plt.show()  
     
 backend = FakeSherbrooke()
-circuits = file_reader("/Users/noelnegron/Desktop/DEMO") # have to change folder directory for the circuits
-
+circuits = file_reader("tests") # have to change folder directory for the circuits
 transpiled_circuits = runtime_benchmarking(5, circuits, backend)
-
 gate_count(transpiled_circuits)
 single_multi_ratio_benchmarking(transpiled_circuits)
