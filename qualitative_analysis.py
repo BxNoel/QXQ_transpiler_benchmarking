@@ -9,7 +9,6 @@ import numpy as np
 import os
 import re
 
-
 # This sorts our ciruits in ascending ordering via number of qubits
 num = re.compile(r'(\d+)')
 def ascending_sort(val):
@@ -21,7 +20,7 @@ def ascending_sort(val):
 def file_reader(file_path):
     backend = FakeSherbrooke()
     circuits = []
-    optimization_level= {3: [],2: [], 1: [], 0: []}
+    optimization_level= {3: [], 2: [], 1: [], 0: []}
     directory = file_path
     for circuit in sorted(os.listdir(directory), key=ascending_sort):
         circuit_path = f"{file_path}/{circuit}"
@@ -31,7 +30,6 @@ def file_reader(file_path):
             circuits.append(qc)
             
     #Sorts Circuits Before Transpiling:
-    #sort_circuit(circuits)
         
     counter = 0
     for circuit in circuits:
@@ -45,7 +43,7 @@ def file_reader(file_path):
         print(f"circuit index: {counter} :completed")
         counter = counter + 1
         
-    return optimization_level #Returns a Map, that has optimization Level pointing to a list of circuits corresponding to that 
+    return optimization_level # Returns a Map, that has optimization Level pointing to a list of circuits corresponding to that 
 
 """
 COUNT NUMBER OF GATES
