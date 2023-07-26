@@ -10,6 +10,7 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 
+
 backend = FakeSherbrooke()
 
 def file_reader(file_path):
@@ -37,6 +38,7 @@ def file_reader(file_path):
 #         counter += 1
 #     return Map
 
+
 def sort_circuit(MQTCircuits):
     for i in range(len(MQTCircuits)):
         min_qubits = MQTCircuits[i].num_qubits
@@ -47,6 +49,7 @@ def sort_circuit(MQTCircuits):
                 qc = MQTCircuits[i]
                 MQTCircuits[i] = MQTCircuits[j]
                 MQTCircuits[j] = qc
+
 
 def num_single_and_multi_qubit_gates(circuit):
     Map = {'single' : 0, "multi" : 0}

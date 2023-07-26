@@ -1,78 +1,83 @@
-from qiskit import QuantumCircuit, Aer, execute
-from qiskit.compiler import transpile
-import time
-import matplotlib.pyplot as plt
 import os
-from qiskit_ibm_provider import IBMProvider
+import glob
+import time
+import numpy as np
+import matplotlib.pyplot as plt
+from statistics import mean
+from qiskit import QuantumCircuit, Aer, execute, transpile
+from qiskit.providers.fake_provider import FakeSherbrooke
 
-#ignore used for simulating for qc   
-#provider = IBMProvider()
+def calculate_runtime(folder_path, optimization_levels, num_iterations):
+    # Backend used
+    backend = FakeSherbrooke()
 
-# Specify the folder path containing the QASM circuits
-folder_path = 'circuit_tests'
+    # List of arrays with data
+    circuit_labels = []
+    transpile_times = []
+    transpile_times_std = []
 
-# Select your backend (e.g., Aer's qasm_simulator)
-#backend = provider.get_backend(ibmq_cusco)
-backend = Aer.get_backend('qasm_simulator')
-
-# Define the optimization levels to test
-optimization_levels = [1, 2, 3]
-
-# Create empty lists to store the circuit runtimes and optimization levels
-circuit_labels = []
-original_runtimes = []
-runtimes_before_transpile = []
-
-# Iterate through the QASM circuits in the folder
-for file_name in os.listdir(folder_path):
-    file_path = os.path.join(folder_path, file_name)
-    if file_path.endswith('.qasm'):
+    # Iterating through the QASM circuits in the folder
+    for file_path in glob.glob(os.path.join(folder_path, '*.qasm')):
         # Read the QASM file and create a QuantumCircuit
         with open(file_path, 'r') as file:
             qasm_str = file.read()
             circuit = QuantumCircuit.from_qasm_str(qasm_str)
 
-        # Store the circuit label (file name) for plotting
-        circuit_labels.append(file_name)
+        # Storing circuit label file name for plotting
+        circuit_labels.append(os.path.basename(file_path))
 
-        # Measure the original runtime (without transpiling)
-        start_time = time.time()
-        job = execute(circuit, backend)
-        result = job.result()
-        end_time = time.time()
-        runtime_original = result.time_taken
-        original_runtimes.append(runtime_original)
-
-        # Iterate through the optimization levels
+        # Transpile circuit and iterate through the optimization levels
         for opt_level in optimization_levels:
-            # Measure the runtime before transpiling
-            start_time = time.time()
-            transpiled_circuit = transpile(circuit, backend, optimization_level=opt_level)
-            job = execute(transpiled_circuit, backend)
-            result = job.result()
-            end_time = time.time()
-            runtime_before = result.time_taken
-            runtimes_before_transpile.append(runtime_before)
+            # Temp array used for each iteration
+            transpile_times_per_level = []
 
-# Generate the bar graph to visualize the runtimes
-x = range(len(circuit_labels))
-width = 0.1
+            for _ in range(num_iterations):
+                # Measuring the runtime for transpiling at each optimization level
+                start_time = time.perf_counter()
+                tqc = transpile(circuit, backend, optimization_level=opt_level)
+                stop_time = time.perf_counter()
+                transpile_times_per_level.append(stop_time - start_time)
 
-plt.figure(figsize=(12, 6))
+            # Taking statistical data of measurements and append to final array
+            mean_transpile_time = mean(transpile_times_per_level)
+            std_transpile_time = np.std(transpile_times_per_level)
+            transpile_times.append(mean_transpile_time)
+            transpile_times_std.append(std_transpile_time)
 
-# Plot original runtime (without transpiling)
-plt.bar(x, original_runtimes, width, label='Original Runtime')
+    # Scatter Plot Creation
+    num_circuits = len(circuit_labels)
+    num_optimization_levels = len(optimization_levels)
+    x_ticks = np.arange(num_circuits)
+    colors = plt.cm.viridis(np.linspace(0, 1, num_optimization_levels))
 
-# Plot runtimes before transpiling at each optimization level
-for i, opt_level in enumerate(optimization_levels):
-    opt_runtimes = runtimes_before_transpile[i::len(optimization_levels)]
-    plt.bar([xi + width * (i + 1) for xi in x], opt_runtimes, width, label=f'Opt. Level {opt_level}')
+    plt.figure(figsize=(12, 6))
 
-plt.xlabel('Circuit Name')
-plt.ylabel('Runtime in seconds')
-plt.title('Runtime of Circuits')
-plt.xticks([xi + width * (len(optimization_levels) / 2) for xi in x], circuit_labels, rotation=45, ha='right')
-plt.legend()
-plt.show()
+    # Plot average transpilation time at each optimization level
+    for i, opt_level in enumerate(optimization_levels):
+        opt_transpile_times = transpile_times[i::num_optimization_levels]
+        x = x_ticks + i * (1 / num_optimization_levels) - 0.5
+        plt.scatter(x, opt_transpile_times, color=colors[i], label=f'Opt. Level {opt_level}')
 
-#Thinking of creating a scatter plot with each opt level, and writing that as we move right qubits increase
+    # Calculate and plot the line of best fit
+    #coefficients = np.polyfit(x_ticks, transpile_times, deg=1)
+    #line_of_best_fit = np.polyval(coefficients, x_ticks)
+    #plt.plot(x_ticks, line_of_best_fit, color='red', linestyle='--', label='Line of Best Fit')
+
+    # Scatter plot labels and formatting
+    plt.xlabel('Circuit Name')
+    plt.ylabel('Transpilation Runtime in seconds')
+    plt.title('Average Transpilation Time at Each Optimization Level')
+    plt.xticks(rotation=45, ha='right')
+    plt.xticks(x_ticks, circuit_labels)
+    plt.legend()
+    plt.grid(axis='y')
+    plt.ylim(bottom=0)
+
+    plt.show()
+
+# Constants declared
+folder_path = '/Users/catherinelozano/Desktop/circuit_tests'
+optimization_levels = [1, 2, 3]
+num_iterations = 10
+
+calculate_runtime(folder_path, optimization_levels, num_iterations)
