@@ -1,0 +1,12 @@
+Optimization Level 1 Stats:
+    Rate of Change: -0.003137475889535847
+    Y-Intercept: 5.005658805590779
+Optimization Level 2 Stats:
+    Rate of Change: -0.0030270153044559015
+    Y-Intercept: 5.026875518613085
+Optimization Level 3;
+     Rate of Change: -0.004129813010397437
+     Y-Intercept  6.982443990978828
+
+
+#Add axis lables
