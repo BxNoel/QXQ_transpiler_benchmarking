@@ -43,66 +43,63 @@ def file_reader(file_path):
 #THIS METHOD ALSO returns a MAPPING of all circuits to a corresponding optimization level.
 def runtime_benchmarking(NUM_ITERATIONS, circuits, the_backend):
     
-    BACKEND = the_backend  
+    BACKEND = the_backend
     Optimization_Levels = {3: [], 2: [], 1: [], 0: []}
-    
+
     #These array will store:   
-    mean_transpile_times_1 = [] 
+    mean_transpile_times_1 = []
     mean_transpile_times_2 = []
     mean_transpile_times_3 = []
-    
-    counter = 0
-    for circuit in circuits:
+
+    for index, circuit in enumerate(circuits):
         
         transpiled = False
-                
-        iteration_times_1 = [] 
+
+        iteration_times_1 = []
         iteration_times_2 = []
         iteration_times_3 = []
-            
+
         for _ in range(NUM_ITERATIONS):
-                
+
             #Transpilation Level 1:
             start_time = time.perf_counter()
             qc1 = transpile(circuit, optimization_level= 1, seed_transpiler= 42, backend=BACKEND)
             stop_time = time.perf_counter()
             iteration_times_1.append(stop_time - start_time) 
-            
+
             #Transpilation Level 2:
             start_time = time.perf_counter()
             qc2 = transpile(circuit, optimization_level= 2, seed_transpiler= 42, backend=BACKEND)
             stop_time = time.perf_counter()
             iteration_times_2.append(stop_time - start_time) #stores in temp array five values
-                
+
             #Transpilation Level 3:
             start_time = time.perf_counter()
             qc3 = transpile(circuit, optimization_level= 3, seed_transpiler= 42, backend=BACKEND)
             stop_time = time.perf_counter()
             iteration_times_3.append(stop_time - start_time) #stores in temp array five values
-            
+
             #If this is the first iteration, then we simply add the circuits to the dictonary
             if transpiled == False:
-                
+
                 Optimization_Levels[3].append(qc3)
                 Optimization_Levels[2].append(qc2)
                 Optimization_Levels[1].append(qc1)
                 Optimization_Levels[0].append(circuit)
                 transpiled = True
-                
+
         #At this point all the data has been added to iteration_times. Now it is just a matter of extracting data. 
         mean_transpile_times_1.append(mean(iteration_times_1))
         mean_transpile_times_2.append(mean(iteration_times_2))
         mean_transpile_times_3.append(mean(iteration_times_3))
-        
-        print("Circuit Index Completed: ", counter)
-        counter += 1
-            
+
+        print("Circuit Index Completed: ", index)
     #Scatter Plot for Runtime after all values are collected
     plt.figure(figsize=(12, 6))
 
     #Number of qubits in the sorted circuit
     number_of_qubits = [i + 2 for i in range(len(mean_transpile_times_1))] #num of qubits 
-    
+
     x = np.array(number_of_qubits)
 
     #Calculating Line of BEST FIT: Optimization Level 1
@@ -124,7 +121,7 @@ def runtime_benchmarking(NUM_ITERATIONS, circuits, the_backend):
     plt.title('Runtime in Seconds (at each opt level)')
     plt.legend()
     plt.show()
-    
+
     return Optimization_Levels
 
 #Takes in a mapping of optimization levels and returns a gate_count 
@@ -155,18 +152,17 @@ def gate_count(optimization_levels):
     plt.legend()
     plt.show()
 
-#Helper method for proceeding function
-def num_single_and_multi_qubit_gates(circuit):
-    Map = {'single' : 0, "multi" : 0}
-    for gate in circuit.data:
-        if len(gate[1]) == 1:
-            Map['single'] = Map['single'] + 1
-        else:
-            Map['multi'] = Map['multi'] + 1
-    return Map
-
 #Returns the ratio of single qubit gates to multi qubit gates
 def single_multi_ratio_benchmarking(optimization_levels):
+    
+    def num_single_and_multi_qubit_gates(circuit):
+        Map = {'single' : 0, "multi" : 0}
+        for gate in circuit.data:
+            if len(gate[1]) == 1:
+                Map['single'] = Map['single'] + 1
+            else:
+                Map['multi'] = Map['multi'] + 1
+        return Map
      #These list will store the ratios (single // Multi ) of each circuit
     level1_list = []
     level2_list = []
@@ -229,7 +225,7 @@ def single_multi_ratio_benchmarking(optimization_levels):
     plt.show()  
     
 backend = FakeSherbrooke()
-circuits = file_reader("/Users/noelnegron/Desktop/DEMO") # have to change folder directory for the circuits
+circuits = file_reader("/Users/noelnegron/Desktop/DJ_Algorithms") # have to change folder directory for the circuits
 
 transpiled_circuits = runtime_benchmarking(5, circuits, backend)
 

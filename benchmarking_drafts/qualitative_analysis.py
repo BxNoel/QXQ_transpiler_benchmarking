@@ -189,7 +189,7 @@ def find_num_entagled_gates(optimization_levels):
     plt.show()
 
 backend = FakeSherbrooke()
-transpiled_circuits = file_reader("tests") # have to change folder directory for the circuits
+transpiled_circuits = file_reader("/Users/noelnegron/Desktop/DJ_Algorithms") # have to change folder directory for the circuits
 gate_count(transpiled_circuits)
 single_multi_ratio_benchmarking(transpiled_circuits)
 find_num_entagled_gates(transpiled_circuits)
