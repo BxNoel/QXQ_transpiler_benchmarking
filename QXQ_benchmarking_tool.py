@@ -10,6 +10,7 @@ import os
 from statistics import mean
 import matplotlib.pyplot as plt
 import re
+import csv
 
 # This sorts our ciruits in ascending ordering via number of qubits
 num = re.compile(r'(\d+)')
@@ -115,6 +116,10 @@ def runtime_benchmarking(NUM_ITERATIONS, circuits, the_backend):
     plt.title('Runtime in Seconds (at each opt level)')
     plt.legend()
     plt.show()
+
+    print("mean 1", mean_transpile_times_1)
+    print("mean 2", mean_transpile_times_2)
+    print("mean 3", mean_transpile_times_3)
     
     return Optimization_Levels
 
@@ -145,6 +150,12 @@ def gate_count(optimization_levels):
     plt.xticks(range(1, len(optimization_levels[1]) + 1))
     plt.legend()
     plt.show()
+
+    print("gate count level 1", opt1)
+    print("gate count level 2", opt2)
+    print("gate count level 3", opt3)
+
+    return opt1, opt2, opt3
 
 #Helper method for proceeding function
 def num_single_and_multi_qubit_gates(circuit):
@@ -190,7 +201,11 @@ def single_multi_ratio_benchmarking(optimization_levels):
     
 
     number_of_qubits= [i + 2 for i in range(len(optimization_levels[1]))]
-    
+
+    print("ratio 1", level1_list)
+    print("ratio 2", level2_list)
+    print("ratio 3", level3_list)
+
     x = np.array(number_of_qubits)
     
     #Calculating Line of BEST FIT: Optimization Level 1
@@ -217,10 +232,29 @@ def single_multi_ratio_benchmarking(optimization_levels):
     plt.xlabel('Number of Qubits')
     plt.ylabel('Ratio: (Single | Multi)' )
     plt.legend()
-    plt.show()  
+    plt.show()
+
+    return level1_list, level2_list, level3_list
     
 backend = FakeSherbrooke()
 circuits = file_reader("tests") # have to change folder directory for the circuits
 transpiled_circuits = runtime_benchmarking(5, circuits, backend)
-gate_count(transpiled_circuits)
-single_multi_ratio_benchmarking(transpiled_circuits)
+# gate_count(transpiled_circuits)
+# single_multi_ratio_benchmarking(transpiled_circuits)
+
+# # Captures the return values in separte variables for CSV file
+#runtime_lvl_1 = runtime_benchmarking(5, circuits, backend)
+gate_count_lvl_1, gate_count_lvl_2, gate_count_lvl_3 = gate_count(transpiled_circuits)
+qubit_ratio_lvl_1, qubit_ratio_lvl_2, qubit_ratio_lvl_3 = single_multi_ratio_benchmarking(transpiled_circuits)
+
+with open('test_circuits_opt_1.csv', 'w', newline='') as csvfile:
+    # Below is the information we are trying to extract from our circuits
+    fieldnames = ['runtime','gate_count','single_to_multi_qubit_ratio']
+    writer = csv.DictWriter(csvfile, fieldnames=fieldnames) # calling the writer
+    writer.writeheader() # Here we are creating the columns for our csv file
+
+    for gate, ratio in zip(gate_count_lvl_1, qubit_ratio_lvl_1):
+        writer.writerow({
+                         'gate_count': gate,
+                         'single_to_multi_qubit_ratio': ratio})
+                        
