@@ -237,24 +237,27 @@ def single_multi_ratio_benchmarking(optimization_levels):
     return level1_list, level2_list, level3_list
     
 backend = FakeSherbrooke()
-circuits = file_reader("tests") # have to change folder directory for the circuits
+circuits = file_reader("DJ_Algorithms") # have to change folder directory for the circuits
 transpiled_circuits = runtime_benchmarking(5, circuits, backend)
 # gate_count(transpiled_circuits)
 # single_multi_ratio_benchmarking(transpiled_circuits)
 
-# # Captures the return values in separte variables for CSV file
+# Gets the name of each circuit 
+circuit_name = [file for file in os.listdir("DJ_Algorithms") if os.path.isfile(os.path.join("DJ_Algorithms", file))]
+
+# Retrieves the return values in separte variables for CSV file
 #runtime_lvl_1 = runtime_benchmarking(5, circuits, backend)
 gate_count_lvl_1, gate_count_lvl_2, gate_count_lvl_3 = gate_count(transpiled_circuits)
 qubit_ratio_lvl_1, qubit_ratio_lvl_2, qubit_ratio_lvl_3 = single_multi_ratio_benchmarking(transpiled_circuits)
 
 with open('test_circuits_opt_1.csv', 'w', newline='') as csvfile:
     # Below is the information we are trying to extract from our circuits
-    fieldnames = ['runtime','gate_count','single_to_multi_qubit_ratio']
+    fieldnames = ['circuit_name','runtime','gate_count','single_to_multi_qubit_ratio']
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames) # calling the writer
     writer.writeheader() # Here we are creating the columns for our csv file
 
-    for gate, ratio in zip(gate_count_lvl_1, qubit_ratio_lvl_1):
-        writer.writerow({
+    for circuit, gate, ratio in zip(circuit_name, gate_count_lvl_1, qubit_ratio_lvl_1):
+        writer.writerow({'circuit_name': circuit,
                          'gate_count': gate,
                          'single_to_multi_qubit_ratio': ratio})
                         
