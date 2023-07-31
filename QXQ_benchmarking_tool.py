@@ -11,33 +11,86 @@ from statistics import mean
 import matplotlib.pyplot as plt
 import re
 import csv
+from collections import OrderedDict
 
-# This sorts our ciruits in ascending ordering via number of qubits
+""" This sorts our ciruits in ascending ordering via number of qubits
+
+    Parameters
+    ----------
+    val : int
+    
+    Returns
+    -------
+    split
+        x
+"""
 num = re.compile(r'(\d+)')
 def ascending_sort(val):
     split = num.split(val)
     split[1::2] = map(int, split[1::2])
     return split
 
-# Path to the circuits stored locally
+""" Path to the circuits stored locally
+
+    Parameters
+    ----------
+    file_path : int
+    
+    Returns
+    -------
+    split
+        x
+"""   #gen list as we read the file to avoid not synching 
 def file_reader(file_path):
     circuits = []
+    file_order = []
     directory = file_path
     for circuit in sorted(os.listdir(directory), key=ascending_sort):
         circuit_path = f"{file_path}/{circuit}"
         if(circuit_path.endswith('.qasm')):
             print(circuit_path)
             qc = QuantumCircuit.from_qasm_file(circuit_path)
+            file_order.append(circuit)
             circuits.append(qc)
-    return circuits
+    #print(circuits)
+    print(file_order) 
+    return circuits, file_order
 
-#This calculates runtimes and returns a completed analysis of a directory of circuits. 
-#THIS METHOD ALSO returns a MAPPING of all circuits to a corresponding optimization level.
+# def file_reader(file_path):
+#     circuits = OrderedDict()  # Use OrderedDict instead of a regular list
+#     directory = file_path
+#     for circuit in sorted(os.listdir(directory), key=ascending_sort):
+#         circuit_path = f"{file_path}/{circuit}"
+#         if circuit_path.endswith('.qasm'):
+#             print(circuit_path)
+#             qc = QuantumCircuit.from_qasm_file(circuit_path)
+#             circuits[circuit] = qc  # Use the filename as the key in OrderedDict
+#     print(list(circuits.keys())) 
+#     return circuits
+
+""" This calculates runtimes and returns a completed analysis of a directory of circuits. 
+    THIS METHOD ALSO returns a MAPPING of all circuits to a corresponding optimization level.
+
+    Parameters
+    ----------
+    NUM_ITERATIONS : int
+    circuits : int
+    the_backend : int
+
+    Returns
+    -------
+    Optimization_Levels
+        x
+"""
 def runtime_benchmarking(NUM_ITERATIONS, circuits, the_backend):
     
     BACKEND = the_backend  
     Optimization_Levels = {3: [], 2: [], 1: [], 0: []}
     
+    # optimization_level_1 = []
+    # optimization_level_2 = []
+    # optimization_level_3 = []
+
     #These array will store:   
     mean_transpile_times_1 = [] 
     mean_transpile_times_2 = []
@@ -78,7 +131,10 @@ def runtime_benchmarking(NUM_ITERATIONS, circuits, the_backend):
                 Optimization_Levels[3].append(qc3)
                 Optimization_Levels[2].append(qc2)
                 Optimization_Levels[1].append(qc1)
-                Optimization_Levels[0].append(circuit)
+                # Optimization_Levels[0].append(circuit)
+                # optimization_level_1.append(qc1)
+                # optimization_level_2.append(qc2)
+                # optimization_level_3.append(qc3)
                 transpiled = True
                 
         #At this point all the data has been added to iteration_times. Now it is just a matter of extracting data. 
@@ -122,8 +178,20 @@ def runtime_benchmarking(NUM_ITERATIONS, circuits, the_backend):
     print("mean 3", mean_transpile_times_3)
     
     return Optimization_Levels
+    #return optimization_level_1, optimization_level_2, optimization_level_3
 
-#Takes in a mapping of optimization levels and returns a gate_count 
+
+""" Takes in a mapping of optimization levels and returns a gate_count
+
+    Parameters
+    ----------
+    optimization_levels : 
+
+    Returns
+    -------
+    opt1, opt2, opt3
+        x
+""" 
 def gate_count(optimization_levels):
     # Transpile each circuit, count the gates, and store the results
     opt1 = []
@@ -157,7 +225,17 @@ def gate_count(optimization_levels):
 
     return opt1, opt2, opt3
 
-#Helper method for proceeding function
+""" Helper method for proceeding function
+
+    Parameters
+    ----------
+    circuit :  
+
+    Returns
+    -------
+    Map
+        x
+""" 
 def num_single_and_multi_qubit_gates(circuit):
     Map = {'single' : 0, "multi" : 0}
     for gate in circuit.data:
@@ -167,7 +245,17 @@ def num_single_and_multi_qubit_gates(circuit):
             Map['multi'] = Map['multi'] + 1
     return Map
 
-#Returns the ratio of single qubit gates to multi qubit gates
+""" Helper method for proceeding function
+
+    Parameters
+    ----------
+    optimization_levels :  
+
+    Returns
+    -------
+    level1_list, level2_list, level3_list
+        Returns the ratio of single qubit gates to multi qubit gates for each optimization level
+""" 
 def single_multi_ratio_benchmarking(optimization_levels):
      #These list will store the ratios (single // Multi ) of each circuit
     level1_list = []
@@ -237,27 +325,35 @@ def single_multi_ratio_benchmarking(optimization_levels):
     return level1_list, level2_list, level3_list
     
 backend = FakeSherbrooke()
-circuits = file_reader("DJ_Algorithms") # have to change folder directory for the circuits
+circuits, file_order = file_reader("DJ_Algorithms") # have to change folder directory for the circuits
 transpiled_circuits = runtime_benchmarking(5, circuits, backend)
-# gate_count(transpiled_circuits)
-# single_multi_ratio_benchmarking(transpiled_circuits)
 
-# Gets the name of each circuit 
-circuit_name = [file for file in os.listdir("DJ_Algorithms") if os.path.isfile(os.path.join("DJ_Algorithms", file))]
+# Gets the name of each circuit to be appended to the CSV file
+#circuit_name = [file for file in os.listdir("tests") if os.path.isfile(os.path.join("tests", file))]
 
-# Retrieves the return values in separte variables for CSV file
-#runtime_lvl_1 = runtime_benchmarking(5, circuits, backend)
+# Retrieves the return values from the benchmarking methods for the CSV file
+#runtime_lvl_1, runtime_lvl_2, runtime_lvl_3 = runtime_benchmarking(5, circuits, backend)
 gate_count_lvl_1, gate_count_lvl_2, gate_count_lvl_3 = gate_count(transpiled_circuits)
 qubit_ratio_lvl_1, qubit_ratio_lvl_2, qubit_ratio_lvl_3 = single_multi_ratio_benchmarking(transpiled_circuits)
 
+""" 
+    Here we are creating the CSV file to store the results from our benchmarks.
+    The data we are collecting includes:
+    The name of the circuit      s
+    The runtime
+    The gate count
+    The ratio of single to multi qubit gates
+    The of number of swap gates
+    The number of entangled gates
+""" 
 with open('test_circuits_opt_1.csv', 'w', newline='') as csvfile:
     # Below is the information we are trying to extract from our circuits
     fieldnames = ['circuit_name','runtime','gate_count','single_to_multi_qubit_ratio']
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames) # calling the writer
-    writer.writeheader() # Here we are creating the columns for our csv file
+    writer.writeheader() # Here we are creating the columns for our CSV file
 
-    for circuit, gate, ratio in zip(circuit_name, gate_count_lvl_1, qubit_ratio_lvl_1):
-        writer.writerow({'circuit_name': circuit,
+    for file_name, gate, ratio in zip(file_order, gate_count_lvl_1, qubit_ratio_lvl_1):
+        writer.writerow({'circuit_name': file_name,
                          'gate_count': gate,
                          'single_to_multi_qubit_ratio': ratio})
                         
