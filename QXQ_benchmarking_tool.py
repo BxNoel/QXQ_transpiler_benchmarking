@@ -10,7 +10,8 @@ import os
 from statistics import mean
 import matplotlib.pyplot as plt
 
-
+import warnings
+warnings.filterwarnings("ignore")
 
 #Sorts circuits from least Qubits to most Qubits
 def sort_circuit(circuits):
@@ -93,7 +94,7 @@ def runtime_benchmarking(NUM_ITERATIONS, circuits, the_backend):
         mean_transpile_times_2.append(mean(iteration_times_2))
         mean_transpile_times_3.append(mean(iteration_times_3))
 
-        print("Circuit Index Completed: ", index)
+        print("Completed Circuit Index: ", index)
     #Scatter Plot for Runtime after all values are collected
     plt.figure(figsize=(12, 6))
 
@@ -163,6 +164,7 @@ def single_multi_ratio_benchmarking(optimization_levels):
             else:
                 Map['multi'] = Map['multi'] + 1
         return Map
+    
      #These list will store the ratios (single // Multi ) of each circuit
     level1_list = []
     level2_list = []
