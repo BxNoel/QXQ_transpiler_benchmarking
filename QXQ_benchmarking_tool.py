@@ -12,8 +12,12 @@ import matplotlib.pyplot as plt
 import re
 import csv
 from collections import OrderedDict
+import warnings
 
-""" This sorts our ciruits in ascending ordering via number of qubits
+# This bypasses the runtime warnings in the terminal
+warnings.filterwarnings("ignore")
+
+""" This sorts our ciruits in ascending ordering via number 
 
     Parameters
     ----------
@@ -22,7 +26,7 @@ from collections import OrderedDict
     Returns
     -------
     split
-        x
+        
 """
 num = re.compile(r'(\d+)')
 def ascending_sort(val):
@@ -40,7 +44,7 @@ def ascending_sort(val):
     -------
     split
         x
-"""   #gen list as we read the file to avoid not synching 
+"""  
 def file_reader(file_path):
     circuits = []
     file_order = []
@@ -50,23 +54,13 @@ def file_reader(file_path):
         if(circuit_path.endswith('.qasm')):
             print(circuit_path)
             qc = QuantumCircuit.from_qasm_file(circuit_path)
+            # Gets the name of each circuit in the order it's read
             file_order.append(circuit)
             circuits.append(qc)
     #print(circuits)
     print(file_order) 
     return circuits, file_order
 
-# def file_reader(file_path):
-#     circuits = OrderedDict()  # Use OrderedDict instead of a regular list
-#     directory = file_path
-#     for circuit in sorted(os.listdir(directory), key=ascending_sort):
-#         circuit_path = f"{file_path}/{circuit}"
-#         if circuit_path.endswith('.qasm'):
-#             print(circuit_path)
-#             qc = QuantumCircuit.from_qasm_file(circuit_path)
-#             circuits[circuit] = qc  # Use the filename as the key in OrderedDict
-#     print(list(circuits.keys())) 
-#     return circuits
 
 """ This calculates runtimes and returns a completed analysis of a directory of circuits. 
     THIS METHOD ALSO returns a MAPPING of all circuits to a corresponding optimization level.
@@ -328,9 +322,6 @@ backend = FakeSherbrooke()
 circuits, file_order = file_reader("DJ_Algorithms") # have to change folder directory for the circuits
 transpiled_circuits = runtime_benchmarking(5, circuits, backend)
 
-# Gets the name of each circuit to be appended to the CSV file
-#circuit_name = [file for file in os.listdir("tests") if os.path.isfile(os.path.join("tests", file))]
-
 # Retrieves the return values from the benchmarking methods for the CSV file
 #runtime_lvl_1, runtime_lvl_2, runtime_lvl_3 = runtime_benchmarking(5, circuits, backend)
 gate_count_lvl_1, gate_count_lvl_2, gate_count_lvl_3 = gate_count(transpiled_circuits)
@@ -339,7 +330,7 @@ qubit_ratio_lvl_1, qubit_ratio_lvl_2, qubit_ratio_lvl_3 = single_multi_ratio_ben
 """ 
     Here we are creating the CSV file to store the results from our benchmarks.
     The data we are collecting includes:
-    The name of the circuit      s
+    The name of the circuit 
     The runtime
     The gate count
     The ratio of single to multi qubit gates
