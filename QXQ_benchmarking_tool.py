@@ -57,8 +57,6 @@ def file_reader(file_path):
             # Gets the name of each circuit in the order it's read
             file_order.append(circuit)
             circuits.append(qc)
-    #print(circuits)
-    print(file_order) 
     return circuits, file_order
 
 
@@ -77,84 +75,68 @@ def file_reader(file_path):
         x
 """
 def runtime_benchmarking(NUM_ITERATIONS, circuits, the_backend):
-    
-    BACKEND = the_backend  
+    BACKEND = the_backend
     Optimization_Levels = {3: [], 2: [], 1: [], 0: []}
-    
-    # optimization_level_1 = []
-    # optimization_level_2 = []
-    # optimization_level_3 = []
 
-    #These array will store:   
-    mean_transpile_times_1 = [] 
+    #These array will store:
+    mean_transpile_times_1 = []
     mean_transpile_times_2 = []
     mean_transpile_times_3 = []
     
+    ttime_level1 = []
+    ttime_level2 = []
+    ttime_level3 = []
     counter = 0
+    
     for circuit in circuits:
-        
         transpiled = False
-                
-        iteration_times_1 = [] 
-        iteration_times_2 = []
-        iteration_times_3 = []
-            
+        temp1 = []
+        temp2 = []
+        temp3 = []
         for _ in range(NUM_ITERATIONS):
-                
             #Transpilation Level 1:
             start_time = time.perf_counter()
             qc1 = transpile(circuit, optimization_level= 1, seed_transpiler= 42, backend=BACKEND)
             stop_time = time.perf_counter()
-            iteration_times_1.append(stop_time - start_time) 
-            
+            temp1.append(stop_time - start_time)
             #Transpilation Level 2:
             start_time = time.perf_counter()
             qc2 = transpile(circuit, optimization_level= 2, seed_transpiler= 42, backend=BACKEND)
             stop_time = time.perf_counter()
-            iteration_times_2.append(stop_time - start_time) #stores in temp array five values
-                
+            temp2.append(stop_time - start_time)
             #Transpilation Level 3:
             start_time = time.perf_counter()
             qc3 = transpile(circuit, optimization_level= 3, seed_transpiler= 42, backend=BACKEND)
             stop_time = time.perf_counter()
-            iteration_times_3.append(stop_time - start_time) #stores in temp array five values
-            
+            temp3.append(stop_time - start_time)
             #If this is the first iteration, then we simply add the circuits to the dictonary
             if transpiled == False:
-                
                 Optimization_Levels[3].append(qc3)
                 Optimization_Levels[2].append(qc2)
                 Optimization_Levels[1].append(qc1)
-                # Optimization_Levels[0].append(circuit)
-                # optimization_level_1.append(qc1)
-                # optimization_level_2.append(qc2)
-                # optimization_level_3.append(qc3)
+                Optimization_Levels[0].append(circuit)
                 transpiled = True
-                
-        #At this point all the data has been added to iteration_times. Now it is just a matter of extracting data. 
-        mean_transpile_times_1.append(mean(iteration_times_1))
-        mean_transpile_times_2.append(mean(iteration_times_2))
-        mean_transpile_times_3.append(mean(iteration_times_3))
+        #At this point all the data has been added to iteration_times. Now it is just a matter of extracting data.
+        ttime_level1.append(temp1)
+        ttime_level2.append(temp2)
+        ttime_level3.append(temp3)
         
+        mean_transpile_times_1.append(mean(temp1))
+        mean_transpile_times_2.append(mean(temp2))
+        mean_transpile_times_3.append(mean(temp3))
         print("Circuit Index Completed: ", counter)
         counter += 1
-            
     #Scatter Plot for Runtime after all values are collected
     plt.figure(figsize=(12, 6))
-
     #Number of qubits in the sorted circuit
-    number_of_qubits = [i + 2 for i in range(len(mean_transpile_times_1))] #num of qubits 
-    
+    number_of_qubits = [i + 2 for i in range(len(mean_transpile_times_1))] #num of qubits
     x = np.array(number_of_qubits)
-
     #Calculating Line of BEST FIT: Optimization Level 1
     a, b = np.polyfit(x, np.array(mean_transpile_times_1), 1)
     #Calculating Line of BEST FIT: Optimization Level 2
     c, d = np.polyfit(x, np.array(mean_transpile_times_2), 1)
     #Calculating Line of BEST Fit: Optimization Level 3
     e, f = np.polyfit(x, np.array(mean_transpile_times_3), 1)
-
-
     plt.scatter(number_of_qubits, mean_transpile_times_1, label = "Average of Opt Level 1")
     plt.plot(x, a*x+b)
     plt.scatter(number_of_qubits, mean_transpile_times_2, label = "Average of Opt Level 2")
@@ -166,12 +148,13 @@ def runtime_benchmarking(NUM_ITERATIONS, circuits, the_backend):
     plt.title('Runtime in Seconds (at each opt level)')
     plt.legend()
     plt.show()
-
+    
     print("mean 1", mean_transpile_times_1)
     print("mean 2", mean_transpile_times_2)
     print("mean 3", mean_transpile_times_3)
     
-    return Optimization_Levels
+    #return mean_transpile_times_1
+    return Optimization_Levels, ttime_level1, ttime_level2, ttime_level3, mean_transpile_times_1, mean_transpile_times_2, mean_transpile_times_3
     #return optimization_level_1, optimization_level_2, optimization_level_3
 
 
@@ -319,13 +302,14 @@ def single_multi_ratio_benchmarking(optimization_levels):
     return level1_list, level2_list, level3_list
     
 backend = FakeSherbrooke()
-circuits, file_order = file_reader("DJ_Algorithms") # have to change folder directory for the circuits
-transpiled_circuits = runtime_benchmarking(5, circuits, backend)
+circuits, file_order = file_reader("tests") # have to change folder directory for the circuits
+#transpiled_circuits = runtime_benchmarking(5, circuits, backend)
 
 # Retrieves the return values from the benchmarking methods for the CSV file
-#runtime_lvl_1, runtime_lvl_2, runtime_lvl_3 = runtime_benchmarking(5, circuits, backend)
-gate_count_lvl_1, gate_count_lvl_2, gate_count_lvl_3 = gate_count(transpiled_circuits)
-qubit_ratio_lvl_1, qubit_ratio_lvl_2, qubit_ratio_lvl_3 = single_multi_ratio_benchmarking(transpiled_circuits)
+#transpile = runtime_benchmarking(5, circuits, backend)
+transpiled_circuits, level1_runtime, level2_runtime, level3_runtime, mean_transpile_times_1, mean_transpile_times_2, mean_transpile_times_3 = runtime_benchmarking(5, circuits, backend)
+level1_gatecount, level2_gatecount, level3_gatecount = gate_count(transpiled_circuits)
+level1_ratio, level2_ratio, level3_ratio = single_multi_ratio_benchmarking(transpiled_circuits)
 
 """ 
     Here we are creating the CSV file to store the results from our benchmarks.
@@ -339,12 +323,34 @@ qubit_ratio_lvl_1, qubit_ratio_lvl_2, qubit_ratio_lvl_3 = single_multi_ratio_ben
 """ 
 with open('test_circuits_opt_1.csv', 'w', newline='') as csvfile:
     # Below is the information we are trying to extract from our circuits
-    fieldnames = ['circuit_name','runtime','gate_count','single_to_multi_qubit_ratio']
+    fieldnames = [' Circuit Name',
+                  ' Average Runtime: Level 1',
+                  ' Level 1 Run Times',
+                  ' Average Runtime: Level 2',
+                  ' Level 2 Run Times',
+                  ' Average Runtime: Level 3',
+                  ' Level 3 Run Times',
+                  ' Gate Count: Level 1', 
+                  ' Gate Count: Level 2', 
+                  ' Gate Count: Level 3',
+                  ' Ratio: Level 1', 
+                  ' Ratio: Level 2',
+                  ' Ratio Level 3']
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames) # calling the writer
     writer.writeheader() # Here we are creating the columns for our CSV file
 
-    for file_name, gate, ratio in zip(file_order, gate_count_lvl_1, qubit_ratio_lvl_1):
-        writer.writerow({'circuit_name': file_name,
-                         'gate_count': gate,
-                         'single_to_multi_qubit_ratio': ratio})
+    for file_name, avg_lvl_1, runtime_lvl_1, avg_lvl_2, runtime_lvl_2, avg_lvl_3, runtime_lvl_3, gate_count_lvl_1, gate_count_lvl_2, gate_count_lvl_3, ratio_lvl_1, ratio_lvl_2, ratio_lvl_3 in zip(file_order, mean_transpile_times_1, level1_runtime, mean_transpile_times_2, level2_runtime, mean_transpile_times_3, level3_runtime, level1_gatecount, level2_gatecount, level3_gatecount, level1_ratio, level2_ratio, level3_ratio):
+        writer.writerow({' Circuit Name': file_name,
+                         ' Average Runtime: Level 1': avg_lvl_1,
+                         ' Level 1 Run Times': runtime_lvl_1, 
+                         ' Average Runtime: Level 2': avg_lvl_2,
+                         ' Level 2 Run Times': runtime_lvl_2,
+                         ' Average Runtime: Level 3': avg_lvl_3,
+                         ' Level 3 Run Times': runtime_lvl_3,
+                         ' Gate Count: Level 1': gate_count_lvl_1, 
+                         ' Gate Count: Level 2': gate_count_lvl_2, 
+                         ' Gate Count: Level 3': gate_count_lvl_3,
+                         ' Ratio: Level 1': ratio_lvl_1, 
+                         ' Ratio: Level 2': ratio_lvl_2,
+                         ' Ratio Level 3': ratio_lvl_3 })
                         
