@@ -321,36 +321,53 @@ level1_ratio, level2_ratio, level3_ratio = single_multi_ratio_benchmarking(trans
     The of number of swap gates
     The number of entangled gates
 """ 
-with open('test_circuits_opt_1.csv', 'w', newline='') as csvfile:
+with open('optimzation_level_1.csv', 'w', newline='') as csvfile:
     # Below is the information we are trying to extract from our circuits
     fieldnames = [' Circuit Name',
                   ' Average Runtime: Level 1',
-                  ' Level 1 Run Times',
-                  ' Average Runtime: Level 2',
-                  ' Level 2 Run Times',
-                  ' Average Runtime: Level 3',
-                  ' Level 3 Run Times',
+                  ' Run Times Level 1',
                   ' Gate Count: Level 1', 
-                  ' Gate Count: Level 2', 
-                  ' Gate Count: Level 3',
-                  ' Ratio: Level 1', 
-                  ' Ratio: Level 2',
-                  ' Ratio Level 3']
+                  ' Ratio: Level 1']
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames) # calling the writer
     writer.writeheader() # Here we are creating the columns for our CSV file
 
-    for file_name, avg_lvl_1, runtime_lvl_1, avg_lvl_2, runtime_lvl_2, avg_lvl_3, runtime_lvl_3, gate_count_lvl_1, gate_count_lvl_2, gate_count_lvl_3, ratio_lvl_1, ratio_lvl_2, ratio_lvl_3 in zip(file_order, mean_transpile_times_1, level1_runtime, mean_transpile_times_2, level2_runtime, mean_transpile_times_3, level3_runtime, level1_gatecount, level2_gatecount, level3_gatecount, level1_ratio, level2_ratio, level3_ratio):
+    for file_name, avg_lvl_1, runtime_lvl_1,gate_count_lvl_1, ratio_lvl_1 in zip(file_order, mean_transpile_times_1, level1_runtime, level1_gatecount, level1_ratio):
         writer.writerow({' Circuit Name': file_name,
                          ' Average Runtime: Level 1': avg_lvl_1,
-                         ' Level 1 Run Times': runtime_lvl_1, 
-                         ' Average Runtime: Level 2': avg_lvl_2,
-                         ' Level 2 Run Times': runtime_lvl_2,
-                         ' Average Runtime: Level 3': avg_lvl_3,
-                         ' Level 3 Run Times': runtime_lvl_3,
+                         ' Run Times Level 1': runtime_lvl_1, 
                          ' Gate Count: Level 1': gate_count_lvl_1, 
-                         ' Gate Count: Level 2': gate_count_lvl_2, 
-                         ' Gate Count: Level 3': gate_count_lvl_3,
-                         ' Ratio: Level 1': ratio_lvl_1, 
-                         ' Ratio: Level 2': ratio_lvl_2,
-                         ' Ratio Level 3': ratio_lvl_3 })
+                         ' Ratio: Level 1': ratio_lvl_1 })
                         
+with open('optimzation_level_2.csv', 'w', newline='') as csvfile:
+    # Below is the information we are trying to extract from our circuits
+    fieldnames = [' Circuit Name',
+                  ' Average Runtime: Level 2',
+                  ' Run Times Level 2',
+                  ' Gate Count: Level 2', 
+                  ' Ratio: Level 2']
+    writer = csv.DictWriter(csvfile, fieldnames=fieldnames) # calling the writer
+    writer.writeheader() # Here we are creating the columns for our CSV file
+
+    for file_name, avg_lvl_2, runtime_lvl_2, gate_count_lvl_2, ratio_lvl_2 in zip(file_order, mean_transpile_times_2, level2_runtime, level2_gatecount, level2_ratio):
+        writer.writerow({' Circuit Name': file_name,
+                         ' Average Runtime: Level 2': avg_lvl_2,
+                         ' Run Times Level 2': runtime_lvl_2, 
+                         ' Gate Count: Level 2': gate_count_lvl_2, 
+                         ' Ratio: Level 2': ratio_lvl_2 })
+        
+with open('optimzation_level_3.csv', 'w', newline='') as csvfile:
+    # Below is the information we are trying to extract from our circuits
+    fieldnames = [' Circuit Name',
+                  ' Average Runtime: Level 3',
+                  ' Run Times Level 3',
+                  ' Gate Count: Level 3', 
+                  ' Ratio: Level 3']
+    writer = csv.DictWriter(csvfile, fieldnames=fieldnames) # calling the writer
+    writer.writeheader() # Here we are creating the columns for our CSV file
+
+    for file_name, avg_lvl_3, runtime_lvl_3, gate_count_lvl_3, ratio_lvl_3 in zip(file_order, mean_transpile_times_3, level3_runtime, level3_gatecount, level3_ratio):
+        writer.writerow({' Circuit Name': file_name,
+                         ' Average Runtime: Level 3': avg_lvl_3,
+                         ' Run Times Level 3': runtime_lvl_3, 
+                         ' Gate Count: Level 3': gate_count_lvl_3, 
+                         ' Ratio: Level 3': ratio_lvl_3 })
