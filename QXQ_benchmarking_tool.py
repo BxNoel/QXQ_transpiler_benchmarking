@@ -17,35 +17,39 @@ import warnings
 # This bypasses the runtime warnings in the terminal
 warnings.filterwarnings("ignore")
 
-""" This sorts our ciruits in ascending ordering via number 
+def ascending_sort(circuits):
+    """ 
+    This sorts our list of circuits in ascending order based on the numeric values within each string of its name 
 
     Parameters
     ----------
-    val : int
+    circuits : list -> A list of quantum circuits names to be sorted
     
     Returns
     -------
-    split
-        
-"""
-num = re.compile(r'(\d+)')
-def ascending_sort(val):
-    split = num.split(val)
+    split : list -> A list of sorted circuit names with numeric segments sorted in ascending order.
+    """
+
+    num = re.compile(r'(\d+)')
+    split = num.split(circuits)
     split[1::2] = map(int, split[1::2])
     return split
 
-""" Path to the circuits stored locally
+def file_reader(file_path):
+    """ 
+    This is the path to the quantum circuits stored from a specified directory and is responsible for 
+    returning a list of QuantumCircuit objects along with a list of the order in which they were read.
 
     Parameters
     ----------
-    file_path : int
+    file_path : str -> The path to the directory containing .qasm files.
     
     Returns
     -------
-    split
-        x
-"""  
-def file_reader(file_path):
+    circuits : tuple -> A list of QuantumCircuit objects read from the QASM files
+    file_order : tuple -> A list of file names in the order they were read from the circuits in the first list.
+    """  
+
     circuits = []
     file_order = []
     directory = file_path
@@ -60,21 +64,25 @@ def file_reader(file_path):
     return circuits, file_order
 
 
-""" This calculates runtimes and returns a completed analysis of a directory of circuits. 
-    THIS METHOD ALSO returns a MAPPING of all circuits to a corresponding optimization level.
+def runtime_benchmarking(NUM_ITERATIONS, circuits, the_backend):
+    """ 
+    This function benchmarks the runtime of transpilation for a list of quantum circuits on the different
+    optimization levels (0, 1, 2, and 3). It calculates and displays the average runtime and creates
+    a graph to visualize the runtime trends for each optimization level.
 
     Parameters
     ----------
-    NUM_ITERATIONS : int
-    circuits : int
-    the_backend : int
+    NUM_ITERATIONS : int -> The number of iterations for benchmarking each circuit
+    circuits : list -> A list of quantum circuits we want to benchmark
+    the_backend : backend -> The backend to used for transpilation
 
     Returns
     -------
-    Optimization_Levels
-        x
-"""
-def runtime_benchmarking(NUM_ITERATIONS, circuits, the_backend):
+    Optimization_Levels : tuple -> A dictionary of transpiled circuits grouped by optimization level.
+    ttime_level1, ttime_level2, ttime_level3 : tuplw -> Lists of runtime data for each optimization level.
+    mean_transpile_times_1, mean_transpile_times_2, mean_transpile_times_3: tuple -> Lists of mean transpile times for each optimization level.
+    """
+
     BACKEND = the_backend
     Optimization_Levels = {3: [], 2: [], 1: [], 0: []}
 
@@ -153,39 +161,39 @@ def runtime_benchmarking(NUM_ITERATIONS, circuits, the_backend):
     print("mean 2", mean_transpile_times_2)
     print("mean 3", mean_transpile_times_3)
     
-    #return mean_transpile_times_1
     return Optimization_Levels, ttime_level1, ttime_level2, ttime_level3, mean_transpile_times_1, mean_transpile_times_2, mean_transpile_times_3
-    #return optimization_level_1, optimization_level_2, optimization_level_3
 
-
-""" Takes in a mapping of optimization levels and returns a gate_count
+def gate_count(optimization_levels):
+    """ 
+    This function is responsible for counting and visualizing the number of gates for the transpiled 
+    circuits at each optimization levels. It then returns the lists containing the gate counts 
+    for each circuit at each optimization level.
 
     Parameters
     ----------
-    optimization_levels : 
+    optimization_levels : dict -> A dictionary containing the lists of transpiled circuits for each optimization level
 
     Returns
     -------
-    opt1, opt2, opt3
-        x
-""" 
-def gate_count(optimization_levels):
+    opt1, opt2, opt3 : tuple -> A tuple containing lists of gate counts for each optimization level
+    """ 
+
     # Transpile each circuit, count the gates, and store the results
     opt1 = []
     opt2 = []
     opt3 = []
     for i in range(len(optimization_levels[1])):
-        # counts the number of gates in a given circuit
+        # Counts the number of gates in a circuit given its respective optimization level
         opt1_count = optimization_levels[1][i].count_ops()
         opt2_count = optimization_levels[2][i].count_ops()
         opt3_count = optimization_levels[3][i].count_ops()
 
-        # appends our count of the transpiled circuit to the array
+        # Appends our count of the transpiled circuit to the array
         opt1.append(sum(opt1_count.values()))
         opt2.append(sum(opt2_count.values()))
         opt3.append(sum(opt3_count.values()))
 
-    # Generate a graph to visualize the gate counts for optimization level 1
+    # Generate a graph to visualize the gate counts for each optimization levels
     plt.plot(range(1, len(optimization_levels[1]) + 1), opt1, label = "Optimization Level 1")
     plt.plot(range(1, len(optimization_levels[2]) + 1), opt2, label = "Optimization Level 2")
     plt.plot(range(1, len(optimization_levels[3]) + 1), opt3, label = "Optimization Level 3")
@@ -202,18 +210,20 @@ def gate_count(optimization_levels):
 
     return opt1, opt2, opt3
 
-""" Helper method for proceeding function
+def num_single_and_multi_qubit_gates(circuit):
+    """ 
+    This function counts the number of single-qubit and multi-qubit gates in a given quantum circuit.
+    It returns a dictionary containing the counts for each type.
 
     Parameters
     ----------
-    circuit :  
+    circuit : Quantum Circuit -> The quantum circuit who's single-qubit and multi-qubit gates you want to count
 
     Returns
     -------
-    Map
-        x
-""" 
-def num_single_and_multi_qubit_gates(circuit):
+    Map : dict -> A dictionary containing the count of single-qubit and multi-qubit gates.
+    """ 
+    
     Map = {'single' : 0, "multi" : 0}
     for gate in circuit.data:
         if len(gate[1]) == 1:
@@ -222,19 +232,22 @@ def num_single_and_multi_qubit_gates(circuit):
             Map['multi'] = Map['multi'] + 1
     return Map
 
-""" Helper method for proceeding function
+def single_multi_ratio_benchmarking(optimization_levels):
+    """ 
+    This fucntion is responible calculating and visualizing the ratio of single-qubit to multi-qubit gates for
+    each optimization level of transpiled quantum circuits. It returns lists containing the ratios
+    for each optimization level.
 
     Parameters
     ----------
-    optimization_levels :  
+    optimization_levels : dict -> A dictionary containing the lists of transpiled circuits for each optimization level 
 
     Returns
     -------
-    level1_list, level2_list, level3_list
-        Returns the ratio of single qubit gates to multi qubit gates for each optimization level
-""" 
-def single_multi_ratio_benchmarking(optimization_levels):
-     #These list will store the ratios (single // Multi ) of each circuit
+    level1_list, level2_list, level3_list : tuple -> A tuple containing the lists of single-multi qubit ratios for each optimization level
+    """ 
+
+    # These lists will store the ratios (single // Multi ) of each circuit
     level1_list = []
     level2_list = []
     level3_list = []    
@@ -302,11 +315,9 @@ def single_multi_ratio_benchmarking(optimization_levels):
     return level1_list, level2_list, level3_list
     
 backend = FakeSherbrooke()
-circuits, file_order = file_reader("tests") # have to change folder directory for the circuits
-#transpiled_circuits = runtime_benchmarking(5, circuits, backend)
+circuits, file_order = file_reader("tests") # Can change the file name depending on the directory you want to use
 
 # Retrieves the return values from the benchmarking methods for the CSV file
-#transpile = runtime_benchmarking(5, circuits, backend)
 transpiled_circuits, level1_runtime, level2_runtime, level3_runtime, mean_transpile_times_1, mean_transpile_times_2, mean_transpile_times_3 = runtime_benchmarking(5, circuits, backend)
 level1_gatecount, level2_gatecount, level3_gatecount = gate_count(transpiled_circuits)
 level1_ratio, level2_ratio, level3_ratio = single_multi_ratio_benchmarking(transpiled_circuits)
@@ -315,15 +326,18 @@ level1_ratio, level2_ratio, level3_ratio = single_multi_ratio_benchmarking(trans
     Here we are creating the CSV file to store the results from our benchmarks.
     The data we are collecting includes:
     The name of the circuit 
-    The runtime
+    The average runtime
+    The list of our 5 data points for to calculate our runtime average 
     The gate count
     The ratio of single to multi qubit gates
     The of number of swap gates
     The number of entangled gates
 """ 
+
+# Optimization Level 1 CSV
 with open('optimzation_level_1.csv', 'w', newline='') as csvfile:
     # Below is the information we are trying to extract from our circuits
-    fieldnames = [' Circuit Name',
+    fieldnames = ['Circuit Name',
                   ' Average Runtime: Level 1',
                   ' Run Times Level 1',
                   ' Gate Count: Level 1', 
@@ -332,15 +346,16 @@ with open('optimzation_level_1.csv', 'w', newline='') as csvfile:
     writer.writeheader() # Here we are creating the columns for our CSV file
 
     for file_name, avg_lvl_1, runtime_lvl_1,gate_count_lvl_1, ratio_lvl_1 in zip(file_order, mean_transpile_times_1, level1_runtime, level1_gatecount, level1_ratio):
-        writer.writerow({' Circuit Name': file_name,
+        writer.writerow({'Circuit Name': file_name,
                          ' Average Runtime: Level 1': avg_lvl_1,
                          ' Run Times Level 1': runtime_lvl_1, 
                          ' Gate Count: Level 1': gate_count_lvl_1, 
                          ' Ratio: Level 1': ratio_lvl_1 })
-                        
+
+# Optimization Level 2 CSV
 with open('optimzation_level_2.csv', 'w', newline='') as csvfile:
     # Below is the information we are trying to extract from our circuits
-    fieldnames = [' Circuit Name',
+    fieldnames = ['Circuit Name',
                   ' Average Runtime: Level 2',
                   ' Run Times Level 2',
                   ' Gate Count: Level 2', 
@@ -349,15 +364,16 @@ with open('optimzation_level_2.csv', 'w', newline='') as csvfile:
     writer.writeheader() # Here we are creating the columns for our CSV file
 
     for file_name, avg_lvl_2, runtime_lvl_2, gate_count_lvl_2, ratio_lvl_2 in zip(file_order, mean_transpile_times_2, level2_runtime, level2_gatecount, level2_ratio):
-        writer.writerow({' Circuit Name': file_name,
+        writer.writerow({'Circuit Name': file_name,
                          ' Average Runtime: Level 2': avg_lvl_2,
                          ' Run Times Level 2': runtime_lvl_2, 
                          ' Gate Count: Level 2': gate_count_lvl_2, 
                          ' Ratio: Level 2': ratio_lvl_2 })
         
+# Optimization Level 3 CSV        
 with open('optimzation_level_3.csv', 'w', newline='') as csvfile:
     # Below is the information we are trying to extract from our circuits
-    fieldnames = [' Circuit Name',
+    fieldnames = ['Circuit Name',
                   ' Average Runtime: Level 3',
                   ' Run Times Level 3',
                   ' Gate Count: Level 3', 
@@ -366,7 +382,7 @@ with open('optimzation_level_3.csv', 'w', newline='') as csvfile:
     writer.writeheader() # Here we are creating the columns for our CSV file
 
     for file_name, avg_lvl_3, runtime_lvl_3, gate_count_lvl_3, ratio_lvl_3 in zip(file_order, mean_transpile_times_3, level3_runtime, level3_gatecount, level3_ratio):
-        writer.writerow({' Circuit Name': file_name,
+        writer.writerow({'Circuit Name': file_name,
                          ' Average Runtime: Level 3': avg_lvl_3,
                          ' Run Times Level 3': runtime_lvl_3, 
                          ' Gate Count: Level 3': gate_count_lvl_3, 
