@@ -2,6 +2,14 @@
     "folders": [
         {
             "path": "."
+        },
+        {
+            "path": "../Desktop/DJ_Algorithms"
         }
-    ]
+    ],
+    "settings": {
+        "cSpell.words": [
+            "qiskit"
+        ]
+    }
 }
