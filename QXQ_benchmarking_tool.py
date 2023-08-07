@@ -355,19 +355,16 @@ def find_num_entangled_gates(optimization_levels, original_circuits):
     entangling_gates_1 = []
 
     # Analyze entangled gates for optimization level 3
-    counter3 = 0
     for circuit in optimization_levels[3]:
         entangling_gates_3.append(find_entangled_qubits(circuit.count_ops()))
     entangling_gates_3 = [item for sublist in entangling_gates_3 for item in sublist]
 
     # Analyze entangled gates for optimization level 2
-    counter2 = 0
     for circuit in optimization_levels[2]:
         entangling_gates_2.append(find_entangled_qubits(circuit.count_ops()))
     entangling_gates_2 = [item for sublist in entangling_gates_2 for item in sublist]
 
     # Analyze entangled gates for optimization level 1
-    counter1 = 0
     for circuit in optimization_levels[1]:
         entangling_gates_1.append(find_entangled_qubits(circuit.count_ops()))
     entangling_gates_1 = [item for sublist in entangling_gates_1 for item in sublist]
