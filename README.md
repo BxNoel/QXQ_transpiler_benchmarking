@@ -22,10 +22,10 @@ Transpiler Benchmarking Tool for preset optimization levels
   5. Circuit Fidelity (Future Work)
 
 # Circuits Tested in Sample Data: #
-1. Deutsch Jozsa
-2. Grover's Algorithm
-3. Bernstein-Vazirani
-4. Quantum Volume
+1. Deutsch Jozsa (DJ)
+2. Grover's Algorithm (GA)
+3. Bernstein-Vazirani (BV)
+4. Quantum Volume (QV)
 
 # Install Required Packages: #
 1. Refer to setupcfg file to install all required packages
