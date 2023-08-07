@@ -313,7 +313,79 @@ def single_multi_ratio_benchmarking(optimization_levels):
     plt.show()
 
     return level1_list, level2_list, level3_list
+
+def find_num_entangled_gates(optimization_levels, original_circuits):
+    """
+    Analyze and plot entangled gate counts for different optimization levels.
+
+    Args:
+        optimization_levels (dict): A dictionary containing transpiled circuits for different optimization levels.
+
+    Returns:
+        tuple: Three lists containing entangled gate counts for each optimization level.
+    """
+
+    # Count the number of entangled gates in each circuit
+    entangled_gate_counts = []
+    entangling_gates_type = ['ecr', 'cx', 'cz', 'swap', 'h', 'ccx', 'crx', 'cry', 'crz']
+
+    for circuit in original_circuits:
+        entangled_gate_count = sum([1 for gate in circuit if gate[0].name in entangling_gates_type])
+        entangled_gate_counts.append(entangled_gate_count)
+
+    def find_entangled_qubits(transpiled_circuits):
+        """
+        Find entangled qubits in a transpiled circuit.
+
+        Args:
+            transpiled_circuits (dict): Transpiled circuit information.
+
+        Returns:
+            list: List of entangled qubits.
+        """
+        entangled_gates = []
+        for gate in transpiled_circuits:
+            if gate in entangling_gates_type:
+                entangled_gates.append(transpiled_circuits[gate])
+        return entangled_gates
     
+    # Initialize lists to store entangled gate counts
+    entangling_gates_3 = []
+    entangling_gates_2 = []
+    entangling_gates_1 = []
+
+    # Analyze entangled gates for optimization level 3
+    counter3 = 0
+    for circuit in optimization_levels[3]:
+        entangling_gates_3.append(find_entangled_qubits(circuit.count_ops()))
+    entangling_gates_3 = [item for sublist in entangling_gates_3 for item in sublist]
+
+    # Analyze entangled gates for optimization level 2
+    counter2 = 0
+    for circuit in optimization_levels[2]:
+        entangling_gates_2.append(find_entangled_qubits(circuit.count_ops()))
+    entangling_gates_2 = [item for sublist in entangling_gates_2 for item in sublist]
+
+    # Analyze entangled gates for optimization level 1
+    counter1 = 0
+    for circuit in optimization_levels[1]:
+        entangling_gates_1.append(find_entangled_qubits(circuit.count_ops()))
+    entangling_gates_1 = [item for sublist in entangling_gates_1 for item in sublist]
+
+    # Plot the results
+    plt.plot(range(1, len(optimization_levels[3]) + 1), entangling_gates_3, marker='o', label='Optimization Level 3')
+    plt.plot(range(1, len(optimization_levels[2]) + 1), entangling_gates_2, marker='o', label='Optimization Level 2')
+    plt.plot(range(1, len(optimization_levels[1]) + 1), entangling_gates_1, marker='o', label='Optimization Level 1')
+    plt.plot(range(1, len(circuits) + 1), entangled_gate_counts, marker='o', label='Original')
+    plt.xlabel('Circuit')
+    plt.ylabel('Entangled Gate Count')
+    plt.title('Number of Entangled Gates (normal vs transpiled)')
+    plt.xticks(range(1, len(optimization_levels[3]) + 1))
+    plt.legend()
+    plt.show()
+
+    return entangling_gates_1, entangling_gates_2, entangling_gates_3
+
 backend = FakeSherbrooke()
 circuits, file_order = file_reader("tests") # Can change the file name depending on the directory you want to use
 
@@ -321,6 +393,7 @@ circuits, file_order = file_reader("tests") # Can change the file name depending
 transpiled_circuits, level1_runtime, level2_runtime, level3_runtime, mean_transpile_times_1, mean_transpile_times_2, mean_transpile_times_3 = runtime_benchmarking(5, circuits, backend)
 level1_gatecount, level2_gatecount, level3_gatecount = gate_count(transpiled_circuits)
 level1_ratio, level2_ratio, level3_ratio = single_multi_ratio_benchmarking(transpiled_circuits)
+entangling_gates_1, entangling_gates_2, entangling_gates_3 = find_num_entangled_gates(transpiled_circuits, circuits)
 
 """ 
     Here we are creating the CSV file to store the results from our benchmarks.
@@ -341,16 +414,18 @@ with open('optimzation_level_1.csv', 'w', newline='') as csvfile:
                   ' Average Runtime: Level 1',
                   ' Run Times Level 1',
                   ' Gate Count: Level 1', 
-                  ' Ratio: Level 1']
+                  ' Ratio: Level 1',
+                  ' Entangling gate count 1']
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames) # calling the writer
     writer.writeheader() # Here we are creating the columns for our CSV file
 
-    for file_name, avg_lvl_1, runtime_lvl_1,gate_count_lvl_1, ratio_lvl_1 in zip(file_order, mean_transpile_times_1, level1_runtime, level1_gatecount, level1_ratio):
+    for file_name, avg_lvl_1, runtime_lvl_1,gate_count_lvl_1, ratio_lvl_1, entangling_gates_1 in zip(file_order, mean_transpile_times_1, level1_runtime, level1_gatecount, level1_ratio, entangling_gates_1):
         writer.writerow({'Circuit Name': file_name,
                          ' Average Runtime: Level 1': avg_lvl_1,
                          ' Run Times Level 1': runtime_lvl_1, 
                          ' Gate Count: Level 1': gate_count_lvl_1, 
-                         ' Ratio: Level 1': ratio_lvl_1 })
+                         ' Ratio: Level 1': ratio_lvl_1,
+                         ' Entangling_gates_1': entangling_gates_1})
 
 # Optimization Level 2 CSV
 with open('optimzation_level_2.csv', 'w', newline='') as csvfile:
@@ -359,16 +434,18 @@ with open('optimzation_level_2.csv', 'w', newline='') as csvfile:
                   ' Average Runtime: Level 2',
                   ' Run Times Level 2',
                   ' Gate Count: Level 2', 
-                  ' Ratio: Level 2']
+                  ' Ratio: Level 2',
+                  ' Entangling gate count 2']
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames) # calling the writer
     writer.writeheader() # Here we are creating the columns for our CSV file
 
-    for file_name, avg_lvl_2, runtime_lvl_2, gate_count_lvl_2, ratio_lvl_2 in zip(file_order, mean_transpile_times_2, level2_runtime, level2_gatecount, level2_ratio):
+    for file_name, avg_lvl_2, runtime_lvl_2, gate_count_lvl_2, ratio_lvl_2, entangling_gates_2 in zip(file_order, mean_transpile_times_2, level2_runtime, level2_gatecount, level2_ratio, entangling_gates_2):
         writer.writerow({'Circuit Name': file_name,
                          ' Average Runtime: Level 2': avg_lvl_2,
                          ' Run Times Level 2': runtime_lvl_2, 
                          ' Gate Count: Level 2': gate_count_lvl_2, 
-                         ' Ratio: Level 2': ratio_lvl_2 })
+                         ' Ratio: Level 2': ratio_lvl_2,
+                         ' Entangling_gates_2': entangling_gates_2})
         
 # Optimization Level 3 CSV        
 with open('optimzation_level_3.csv', 'w', newline='') as csvfile:
@@ -377,13 +454,15 @@ with open('optimzation_level_3.csv', 'w', newline='') as csvfile:
                   ' Average Runtime: Level 3',
                   ' Run Times Level 3',
                   ' Gate Count: Level 3', 
-                  ' Ratio: Level 3']
+                  ' Ratio: Level 3',
+                  ' Entangling gate count 3']
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames) # calling the writer
     writer.writeheader() # Here we are creating the columns for our CSV file
 
-    for file_name, avg_lvl_3, runtime_lvl_3, gate_count_lvl_3, ratio_lvl_3 in zip(file_order, mean_transpile_times_3, level3_runtime, level3_gatecount, level3_ratio):
+    for file_name, avg_lvl_3, runtime_lvl_3, gate_count_lvl_3, ratio_lvl_3, entangling_gates_3 in zip(file_order, mean_transpile_times_3, level3_runtime, level3_gatecount, level3_ratio, entangling_gates_3):
         writer.writerow({'Circuit Name': file_name,
                          ' Average Runtime: Level 3': avg_lvl_3,
                          ' Run Times Level 3': runtime_lvl_3, 
                          ' Gate Count: Level 3': gate_count_lvl_3, 
-                         ' Ratio: Level 3': ratio_lvl_3 })
+                         ' Ratio: Level 3': ratio_lvl_3,
+                         ' Entangling_gates_3': entangling_gates_3})
