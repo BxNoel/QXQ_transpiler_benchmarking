@@ -9,7 +9,7 @@ Please Contact for any help working with repo
   2. Setup.cfg
   3. Sample_Test_DJ
   4. Sample_Test_GA
-  5. BV_Results_200.ipynb
+  5. BV_120_Results.ipynb
   6. BV_CSV_Lvl1
   7. BV_CSV_Lvl2
   8. BV_CSV_Lvl3
@@ -33,7 +33,7 @@ Please Contact for any help working with repo
 4. Quantum Volume (QV)
 
 # Install Required Packages: #
-1. Refer to setupcfg file to install all required packages
+1. Refer to setup.cfg file to install all required packages
    Youtube Link for directions: (https://youtu.be/JKegib9jgVA)
 
 # Directions To Operate: #
