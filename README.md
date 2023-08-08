@@ -7,17 +7,10 @@ Please Contact for any help working with repo
   # Files in Github Repo:
   1. README.md
   2. Setup.cfg
-  3. Sample_Test_DJ
-  4. Sample_Test_GA
-  5. BV_120_Results.ipynb
-  6. BV_CSV_Lvl1
-  7. BV_CSV_Lvl2
-  8. BV_CSV_Lvl3
-  9. Sample_Test_QV
-  10. CSV_DJ
-  11. CSV_GA
-  12. CSV_BV
-  13. CSV_QV
+  3.BV_120_Results.ipynb
+  4. BV_Lvl1_120.csv
+  5. BV_Lvl2_120.csv
+  6. BV_Lvl3_120.csv
 
 # Benchmarking Suite Metrics Status #
   1. Circuit Depth --> **Changed to Ratio of Multi-Qubit and Single Qubit Gates**
