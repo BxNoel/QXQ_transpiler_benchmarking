@@ -17,7 +17,7 @@ Please Contact for any help working with repo
   10. waiting for 500.csv - All data for 500
 
 # Benchmarking Suite Metrics Status #
-  1. Circuit Depth --> **Changed to Ratio of Multi-Qubit and Single Qubit Gates**
+  1. Ratio of Multi-Qubit and Single Qubit Gates**
   2. Runtime of Transplier (Integrated)
   3. Number of Gates (Integrated)
   4. Number of Entangled Gates (Integrated)
