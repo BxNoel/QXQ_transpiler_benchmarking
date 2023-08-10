@@ -11,29 +11,33 @@ from statistics import mean
 import matplotlib.pyplot as plt
 import re
 import csv
-from collections import OrderedDict
 import warnings
 
 # This bypasses the runtime warnings in the terminal
 warnings.filterwarnings("ignore")
 
-def ascending_sort(circuits):
+def sort_circuit(circuits):
     """ 
-    This sorts our list of circuits in ascending order based on the numeric values within each string of its name 
+    Sorts a list of quantum circuits in descending order based on the number of qubits they contain.
 
     Parameters
     ----------
-    circuits : list -> A list of quantum circuits names to be sorted
+    circuits : list -> A list of quantum circuits to be sorted
     
     Returns
     -------
-    split : list -> A list of sorted circuit names with numeric segments sorted in ascending order.
+    None. -> To be called in the file reader to organize circuits to produce statistically significant graphs
     """
 
-    num = re.compile(r'(\d+)')
-    split = num.split(circuits)
-    split[1::2] = map(int, split[1::2])
-    return split
+    for i in range(len(circuits)):
+        min_qubits = circuits[i].num_qubits
+        for j in range(len(circuits)):
+            temp_qubits = circuits[j].num_qubits
+            if min_qubits < temp_qubits:
+                min_qubits = temp_qubits
+                qc = circuits[i]
+                circuits[i] = circuits[j]
+                circuits[j] = qc
 
 def file_reader(file_path):
     """ 
@@ -53,16 +57,17 @@ def file_reader(file_path):
     circuits = []
     file_order = []
     directory = file_path
-    for circuit in sorted(os.listdir(directory), key=ascending_sort):
+    for circuit in os.listdir(directory):
         circuit_path = f"{file_path}/{circuit}"
         if(circuit_path.endswith('.qasm')):
             print(circuit_path)
             qc = QuantumCircuit.from_qasm_file(circuit_path)
-            # Gets the name of each circuit in the order it's read
             file_order.append(circuit)
             circuits.append(qc)
+            
+    #Sorts Circuits Before Transpiling:
+    sort_circuit(circuits)
     return circuits, file_order
-
 
 def runtime_benchmarking(NUM_ITERATIONS, circuits, the_backend):
     """ 
@@ -223,7 +228,7 @@ def num_single_and_multi_qubit_gates(circuit):
     -------
     Map : dict -> A dictionary containing the count of single-qubit and multi-qubit gates.
     """ 
-    
+
     Map = {'single' : 0, "multi" : 0}
     for gate in circuit.data:
         if len(gate[1]) == 1:
@@ -314,8 +319,8 @@ def single_multi_ratio_benchmarking(optimization_levels):
 
     return level1_list, level2_list, level3_list
     
-backend = FakeSherbrooke()
-circuits, file_order = file_reader("tests") # Can change the file name depending on the directory you want to use
+backend = FakeSherbrooke() # Can change the backend you want to use
+circuits, file_order = file_reader("/Users/guadalupecantera/Desktop/MQTBench_2023-08-04-02-17-19") # Can change the file name depending on the directory you want to use
 
 # Retrieves the return values from the benchmarking methods for the CSV file
 transpiled_circuits, level1_runtime, level2_runtime, level3_runtime, mean_transpile_times_1, mean_transpile_times_2, mean_transpile_times_3 = runtime_benchmarking(5, circuits, backend)
