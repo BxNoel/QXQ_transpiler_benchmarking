@@ -2,20 +2,6 @@
 Transpiler Benchmarking Tool for preset optimization levels
 NOTE: Optimization levels can be customized, and the way to intake circuits (via func or file) just customize, and edit that part of the code
 
-Please Contact for any help working with repo
-  
-  # Files in Github Repo:
-  1. README.md
-  2. Setup.cfg
-  3. BV_120_Results.ipynb - all graphs for 120
-  4. BV_Lvl1_120.csv
-  5. BV_Lvl2_120.csv
-  6. BV_Lvl3_120.csv
-  7. BV_500_Ratio - Graph for 500
-  8. BV_500_GateCount - Graph for 500
-  9. BV_500_Runtime - Graph for 500
-  10. waiting for 500.csv - All data for 500
-
 # Benchmarking Suite Metrics Status #
   1. Ratio of Multi-Qubit and Single Qubit Gates**
   2. Runtime of Transplier (Integrated)
