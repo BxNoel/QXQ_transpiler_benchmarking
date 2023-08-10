@@ -198,14 +198,16 @@ def gate_count(optimization_levels):
         opt2.append(sum(opt2_count.values()))
         opt3.append(sum(opt3_count.values()))
 
+    number_of_qubits = [i + 2 for i in range(len(optimization_levels[1]))]   
+
     # Generate a graph to visualize the gate counts for each optimization levels
-    plt.plot(range(1, len(optimization_levels[1]) + 1), opt1, label = "Optimization Level 1")
-    plt.plot(range(1, len(optimization_levels[2]) + 1), opt2, label = "Optimization Level 2")
-    plt.plot(range(1, len(optimization_levels[3]) + 1), opt3, label = "Optimization Level 3")
-    plt.xlabel('Circuit')
+    plt.plot(number_of_qubits, opt1, label = "Optimization Level 1")
+    plt.plot(number_of_qubits, opt2, label = "Optimization Level 2")
+    plt.plot(number_of_qubits, opt3, label = "Optimization Level 3")
+    plt.xlabel('Number of Qubits')
     plt.ylabel('Gate Count')
     plt.title('Gate Count of Transpiled Circuits')
-    plt.xticks(range(1, len(optimization_levels[1]) + 1))
+    #plt.xticks(range(1, len(optimization_levels[1]) + 1))
     plt.legend()
     plt.show()
 
@@ -317,7 +319,7 @@ def single_multi_ratio_benchmarking(optimization_levels):
     plt.legend()
     plt.show()
 
-    return level1_list, level2_list, level3_list
+    return level1_list, level2_list, level3_list                                                                                                                                                                                                                                                                                                                                                                                                                                            
     
 backend = FakeSherbrooke() # Can change the backend you want to use
 circuits, file_order = file_reader("/Users/guadalupecantera/Desktop/MQTBench_2023-08-04-02-17-19") # Can change the file name depending on the directory you want to use
