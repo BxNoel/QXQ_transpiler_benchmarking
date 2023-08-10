@@ -23,7 +23,6 @@ Please Contact for any help working with repo
 1. Deutsch Jozsa (DJ)
 2. Grover's Algorithm (GA)
 3. Bernstein-Vazirani (BV)
-4. Quantum Volume (QV)
 
 # Install Required Packages: #
 1. Refer to setup.cfg file to install all required packages
