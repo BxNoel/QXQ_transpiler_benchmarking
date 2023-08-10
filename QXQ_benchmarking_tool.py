@@ -94,9 +94,8 @@ def runtime_benchmarking(NUM_ITERATIONS, circuits, the_backend):
     ttime_level1 = []
     ttime_level2 = []
     ttime_level3 = []
-    counter = 0
     
-    for circuit in circuits:
+    for counter, circuit in enumerate(circuits):
         transpiled = False
         temp1 = []
         temp2 = []
@@ -133,7 +132,7 @@ def runtime_benchmarking(NUM_ITERATIONS, circuits, the_backend):
         mean_transpile_times_2.append(mean(temp2))
         mean_transpile_times_3.append(mean(temp3))
         print("Circuit Index Completed: ", counter)
-        counter += 1
+        
     #Scatter Plot for Runtime after all values are collected
     plt.figure(figsize=(12, 6))
     #Number of qubits in the sorted circuit
