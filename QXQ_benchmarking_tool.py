@@ -378,8 +378,9 @@ def find_num_entangled_gates(optimization_levels, original_circuits):
 
     return entangling_gates_1, entangling_gates_2, entangling_gates_3
 
+path_name = "/Users/noelnegron/Desktop/DJ_Algorithms"  # Can change the file name depending on the directory you want to use
 backend = FakeSherbrooke()
-circuits, file_order = file_reader("tests") # Can change the file name depending on the directory you want to use
+circuits, file_order = file_reader(path_name)
 
 # Retrieves the return values from the benchmarking methods for the CSV file
 transpiled_circuits, level1_runtime, level2_runtime, level3_runtime, mean_transpile_times_1, mean_transpile_times_2, mean_transpile_times_3 = runtime_benchmarking(5, circuits, backend)
@@ -399,8 +400,9 @@ entangling_gates_1, entangling_gates_2, entangling_gates_3 = find_num_entangled_
     The number of entangled gates
 """ 
 
+
 # Optimization Level 1 CSV
-with open('optimzation_level_1.csv', 'w', newline='') as csvfile:
+with open(f'{path_name}_level1.csv', 'w', newline='') as csvfile:
     # Below is the information we are trying to extract from our circuits
     fieldnames = ['Circuit Name',
                   ' Average Runtime: Level 1',
@@ -411,16 +413,16 @@ with open('optimzation_level_1.csv', 'w', newline='') as csvfile:
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames) # calling the writer
     writer.writeheader() # Here we are creating the columns for our CSV file
 
-    for file_name, avg_lvl_1, runtime_lvl_1,gate_count_lvl_1, ratio_lvl_1, entangling_gates_1 in zip(file_order, mean_transpile_times_1, level1_runtime, level1_gatecount, level1_ratio, entangling_gates_1):
+    for file_name, avg_lvl_1, runtime_lvl_1,gate_count_lvl_1, ratio_lvl_1 in zip (file_order, mean_transpile_times_1, level1_runtime, level1_gatecount, level1_ratio):
         writer.writerow({'Circuit Name': file_name,
                          ' Average Runtime: Level 1': avg_lvl_1,
                          ' Run Times Level 1': runtime_lvl_1, 
                          ' Gate Count: Level 1': gate_count_lvl_1, 
                          ' Ratio: Level 1': ratio_lvl_1,
-                         ' Entangling_gates_1': entangling_gates_1})
+                         })
 
 # Optimization Level 2 CSV
-with open('optimzation_level_2.csv', 'w', newline='') as csvfile:
+with open(f'{path_name}_level2.csv', 'w', newline='') as csvfile:
     # Below is the information we are trying to extract from our circuits
     fieldnames = ['Circuit Name',
                   ' Average Runtime: Level 2',
@@ -431,16 +433,16 @@ with open('optimzation_level_2.csv', 'w', newline='') as csvfile:
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames) # calling the writer
     writer.writeheader() # Here we are creating the columns for our CSV file
 
-    for file_name, avg_lvl_2, runtime_lvl_2, gate_count_lvl_2, ratio_lvl_2, entangling_gates_2 in zip(file_order, mean_transpile_times_2, level2_runtime, level2_gatecount, level2_ratio, entangling_gates_2):
+    for file_name, avg_lvl_2, runtime_lvl_2, gate_count_lvl_2, ratio_lvl_2 in zip(file_order, mean_transpile_times_2, level2_runtime, level2_gatecount, level2_ratio):
         writer.writerow({'Circuit Name': file_name,
                          ' Average Runtime: Level 2': avg_lvl_2,
                          ' Run Times Level 2': runtime_lvl_2, 
                          ' Gate Count: Level 2': gate_count_lvl_2, 
                          ' Ratio: Level 2': ratio_lvl_2,
-                         ' Entangling_gates_2': entangling_gates_2})
+                         })
         
 # Optimization Level 3 CSV        
-with open('optimzation_level_3.csv', 'w', newline='') as csvfile:
+with open(f'{path_name}_level3.csv', 'w', newline='') as csvfile:
     # Below is the information we are trying to extract from our circuits
     fieldnames = ['Circuit Name',
                   ' Average Runtime: Level 3',
@@ -451,10 +453,10 @@ with open('optimzation_level_3.csv', 'w', newline='') as csvfile:
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames) # calling the writer
     writer.writeheader() # Here we are creating the columns for our CSV file
 
-    for file_name, avg_lvl_3, runtime_lvl_3, gate_count_lvl_3, ratio_lvl_3, entangling_gates_3 in zip(file_order, mean_transpile_times_3, level3_runtime, level3_gatecount, level3_ratio, entangling_gates_3):
+    for file_name, avg_lvl_3, runtime_lvl_3, gate_count_lvl_3, ratio_lvl_3 in zip(file_order, mean_transpile_times_3, level3_runtime, level3_gatecount, level3_ratio):
         writer.writerow({'Circuit Name': file_name,
                          ' Average Runtime: Level 3': avg_lvl_3,
                          ' Run Times Level 3': runtime_lvl_3, 
                          ' Gate Count: Level 3': gate_count_lvl_3, 
                          ' Ratio: Level 3': ratio_lvl_3,
-                         ' Entangling_gates_3': entangling_gates_3})
+                         })
