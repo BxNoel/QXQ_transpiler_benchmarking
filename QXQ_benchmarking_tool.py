@@ -164,50 +164,46 @@ def runtime_benchmarking(NUM_ITERATIONS, circuits, the_backend):
     return Optimization_Levels, ttime_level1, ttime_level2, ttime_level3, mean_transpile_times_1, mean_transpile_times_2, mean_transpile_times_3
 
 def gate_count(optimization_levels):
-    """ 
-    This function is responsible for counting and visualizing the number of gates for the transpiled 
-    circuits at each optimization levels. It then returns the lists containing the gate counts 
+    """
+    This function is responsible for counting and visualizing the number of gates for the transpiled
+    circuits at each optimization levels. It then returns the lists containing the gate counts
     for each circuit at each optimization level.
-
     Parameters
     ----------
     optimization_levels : dict -> A dictionary containing the lists of transpiled circuits for each optimization level
-
     Returns
     -------
-    opt1, opt2, opt3 : tuple -> A tuple containing lists of gate counts for each optimization level
-    """ 
-
+    opt1, opt2, opt3 : list -> A list containing lists of gate counts for each optimization level
+    """
     # Transpile each circuit, count the gates, and store the results
     opt1 = []
     opt2 = []
     opt3 = []
+    
     for i in range(len(optimization_levels[1])):
         # Counts the number of gates in a circuit given its respective optimization level
         opt1_count = optimization_levels[1][i].count_ops()
         opt2_count = optimization_levels[2][i].count_ops()
         opt3_count = optimization_levels[3][i].count_ops()
-
         # Appends our count of the transpiled circuit to the array
         opt1.append(sum(opt1_count.values()))
         opt2.append(sum(opt2_count.values()))
         opt3.append(sum(opt3_count.values()))
-
+        
+    number_of_qubits = [i + 2 for i in range(len(optimization_levels[1]))]
+    
     # Generate a graph to visualize the gate counts for each optimization levels
-    plt.plot(range(1, len(optimization_levels[1]) + 1), opt1, label = "Optimization Level 1")
-    plt.plot(range(1, len(optimization_levels[2]) + 1), opt2, label = "Optimization Level 2")
-    plt.plot(range(1, len(optimization_levels[3]) + 1), opt3, label = "Optimization Level 3")
-    plt.xlabel('Circuit')
+    plt.plot(number_of_qubits, opt1, label = "Optimization Level 1")
+    plt.plot(number_of_qubits, opt2, label = "Optimization Level 2")
+    plt.plot(number_of_qubits, opt3, label = "Optimization Level 3")
+    plt.xlabel('Number of Qubits')
     plt.ylabel('Gate Count')
     plt.title('Gate Count of Transpiled Circuits')
-    plt.xticks(range(1, len(optimization_levels[1]) + 1))
     plt.legend()
     plt.show()
-
     print("gate count level 1", opt1)
     print("gate count level 2", opt2)
     print("gate count level 3", opt3)
-
     return opt1, opt2, opt3
 
 def num_single_and_multi_qubit_gates(circuit):
