@@ -38,7 +38,7 @@ and the `path_name`, which is specific to the QASM directory to be benchmarked.
 backend = FakeSherbrooke()
 path_name = "Insert_Path_Name_Here" #Enter path name here
 circuits, file_order = file_reader(path_name) # Place file name to perform benchmarking test on runtime
-transpiled_circuits, level1_runtime, level2_runtime, level3_runtime, mean_transpile_times_1, mean_transpile_times_2, mean_tra
+transpiled_circuits, level1_runtime, level2_runtime, level3_runtime, mean_transpile_times_1, mean_transpile_times_2, mean_transpile_times_3
 ```
 **2)To benchmark using all available metrics, refer to the following Python script:** `QXQ_benchmarking_tool.ipynb`
 #### When adding your file path to the QASM directory, please refer to lines 380-390
