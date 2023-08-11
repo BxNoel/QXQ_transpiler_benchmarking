@@ -27,28 +27,42 @@ Refer to `Quantum Circuits` to use preset QASM directories or build your own. [n
 Once you have obtained a QASM Directory, you can begin to load it into the benchmarking assessments. Currently, there are two 
 different Python files used to begin benchmarking Qiskit transpilation.  
 
-**1) For a user constructed benchmarking test, please refer to the following Python Notebook:**  `benchmarking_notebook.ipynb` 
+**1) For a user-constructed benchmarking test, please refer to the following Python Notebook:**  `benchmarking_notebook.ipynb` 
 
 #### Usage Example
-Here, I use the Jupiter Notebook to allow for simple benchmarking customization. All that is left is to define the `get_qasm_files()`  variable, which is specific the QASM directory to be benchmarked. 
+Here, I use the Jupiter Notebook to allow for simple benchmarking customization. All that is left is to define the `backend` you want to test
+and the `path_name`, which is specific to the QASM directory to be benchmarked. 
 
 
 ```python
-class QASMBench(QASMInterface):
-    """Submodule for QASMBench circuits."""
+backend = FakeSherbrooke()
+path_name = "Insert_Path_Name_Here" #Enter path name here
+circuits, file_order = file_reader(path_name) # Place file name to perform benchmarking test on runtime
+transpiled_circuits, level1_runtime, level2_runtime, level3_runtime, mean_transpile_times_1, mean_transpile_times_2, mean_tra
+```
+**2)To benchmark using all available metrics, refer to the following Python script:** `QXQ_benchmarking_tool.ipynb`
+#### When adding your file path to the QASM directory, please refer to lines 380-390
 
-    def __init__(self, size: str):
-        """
-        Args:
-        size: 'small', 'medium', or 'large'
-        """
-        self.size = size
-        self.qasm_files = self._get_qasm_files("QASMBench", self.size)
+Here are lines 380-390 in `QXQ_benchmarking_tool.ipynb`. All that needs to be done is specified a specific backend and path_name. If a 
+backend is not specified, then `FakeSherbrooke()` is used.  
 
+```python
+path_name = "Insert_Path_Name_Here" # Change the path name
+backend = FakeSherbrooke()
+circuits, file_order = file_reader(path_name)
+
+# Retrievesvalues from the benchmarking methods and inputs into the CSV file
+transpiled_circuits, level1_runtime, level2_runtime, level3_runtime, mean_transpile_times_1, mean_transpile_times_2, mean_transpile_times_3 = runtime_benchmarking(5, circuits, backend)
+level1_gatecount, level2_gatecount, level3_gatecount = gate_count(transpiled_circuits)
+level1_ratio, level2_ratio, level3_ratio = single_multi_ratio_benchmarking(transpiled_circuits)
 ```
 
+### 3. Retrieving Results:
+Once your benchmarking has finished for all optimization levels, the results are then returned in a CSV file. 
+The file should be named after your path_name and should be separated by Optimization Level. Graphs will also be 
+returned, ready to save. 
 
-
+![inital plot](image.jpg)
 
 
 
