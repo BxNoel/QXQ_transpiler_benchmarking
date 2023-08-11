@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 import re
 import csv
 from collections import OrderedDict
+from quantumCircuits import buildQC
 import warnings
 
 # This bypasses the runtime warnings in the terminal
