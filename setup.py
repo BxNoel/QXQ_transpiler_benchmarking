@@ -13,11 +13,11 @@ setup(
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: Apache Software License",  # Updated license information
+        "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
     ],
     keywords=["MQT", "quantum computing", "benchmarking", "performance", "testing"],
-    license="Apache License 2.0",  # Updated license information
+    license="Apache License 2.0",
     python_requires=">=3.9",
     packages=find_packages(),
     install_requires=['qiskit', 'numpy', 'matplotlib'],
