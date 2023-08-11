@@ -1,4 +1,4 @@
-# QXQ_transpiler_benchmarking tool
+# QXQ Transpilation Benchmarking Tool
 Transpiler Benchmarking Tool for preset optimization levels
 NOTE: Optimization levels can be customized, and the way to intake circuits (via func or file) just customize, and edit that part of the code
 
