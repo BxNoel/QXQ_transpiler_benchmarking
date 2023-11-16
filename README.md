@@ -62,7 +62,7 @@ Once your benchmarking has finished for all optimization levels, the results are
 The file should be named after your path_name and should be separated by Optimization Level. Graphs will also be 
 returned, ready to save. 
 
-![inital plot](Quantum_Circuits/BV_500_Runtime.jpg)
+![](https://github.com/BxNoel/QXQ_transpiler_benchmarking/blob/main/Quantum%20Circuits/BV_500_Runtime.jpg)
 
 
 ## Circuits Tested in Sample Data: #
